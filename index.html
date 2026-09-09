@@ -761,7 +761,7 @@
           <div class="history-star">✦</div>
 
           <div>
-            Servicio ${index + 1}
+            ${escapeHTML(item.service_name || `Servicio ${index + 1}`)}
             ${rawDate
               ? " · " + escapeHTML(formatDate(rawDate))
               : ""}
