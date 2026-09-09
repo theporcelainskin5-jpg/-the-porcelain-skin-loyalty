@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#F4EFE9">
+
+  <title>The Porcelain Skin | Tarjeta de Fidelidad</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --cream: #f7f3ee;
+      --cream-dark: #e9dfd4;
+      --nude: #bd9576;
+      --nude-dark: #8d674d;
+      --brown: #5b4030;
+      --black: #181512;
+      --soft: #a78e7c;
+      --line: rgba(141, 103, 77, .22);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top, #fff 0%, transparent 35%),
+        linear-gradient(145deg, #ede5dc, #d8cec2);
+      color: var(--brown);
+      font-family: "Montserrat", sans-serif;
+      padding: 18px 12px 40px;
+    }
+
+    .page {
+      width: min(100%, 520px);
+      margin: 0 auto;
+    }
+
+    .card {
+      background: var(--cream);
+      border-radius: 34px;
+      overflow: hidden;
+      box-shadow: 0 20px 55px rgba(68, 47, 33, .18);
+      border: 1px solid rgba(255,255,255,.7);
+    }
+
+    /* FOTO PRINCIPAL */
+
+    .hero {
+      position: relative;
+      height: 315px;
+      background: #17120f;
+      overflow: hidden;
+    }
+
+    .hero-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 24%;
+      display: block;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(247,243,238,0) 38%,
+        rgba(247,243,238,.10) 53%,
+        rgba(247,243,238,.65) 76%,
+        var(--cream) 100%
+      );
+    }
+
+    /* MARCA */
+
+    .brand {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      margin-top: -87px;
+      padding: 0 24px 22px;
+    }
+
+    .logo-wrap {
+      width: 105px;
+      height: 105px;
+      margin: 0 auto 12px;
+      border-radius: 50%;
+      background: rgba(250,247,243,.96);
+      display: grid;
+      place-items: center;
+      box-shadow: 0 7px 22px rgba(61,41,28,.14);
+      border: 1px solid rgba(141,103,77,.25);
+    }
+
+    .logo {
+      width: 84px;
+      height: 84px;
+      object-fit: contain;
+    }
+
+    .brand-name {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 38px;
+      line-height: .95;
+      font-weight: 500;
+      color: var(--black);
+    }
+
+    .tagline {
+      font-family: "Cormorant Garamond", serif;
+      color: var(--nude-dark);
+      font-size: 19px;
+      margin-top: 8px;
+    }
+
+    .divider {
+      width: 78%;
+      height: 1px;
+      margin: 22px auto 0;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        var(--nude),
+        transparent
+      );
+    }
+
+    /* INFORMACIÓN CLIENTA */
+
+    .content {
+      padding: 4px 25px 34px;
+    }
+
+    .eyebrow {
+      text-align: center;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      font-size: 11px;
+      color: var(--nude-dark);
+      margin-bottom: 8px;
+    }
+
+    .client-name {
+      text-align: center;
+      font-family: "Cormorant Garamond", serif;
+      color: var(--black);
+      font-size: 35px;
+      font-weight: 500;
+      line-height: 1;
+    }
+
+    .card-number {
+      text-align: center;
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--soft);
+      margin-top: 9px;
+    }
+
+    .intro {
+      text-align: center;
+      font-family: "Cormorant Garamond", serif;
+      font-size: 19px;
+      line-height: 1.25;
+      color: #806a5a;
+      margin: 21px auto 27px;
+      max-width: 340px;
+    }
+
+    /* SELLOS */
+
+    .stamps {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 13px 8px;
+      margin: 0 auto 20px;
+    }
+
+    .stamp {
+      aspect-ratio: 1;
+      width: 100%;
+      max-width: 66px;
+      justify-self: center;
+      border: 1.4px solid rgba(141,103,77,.35);
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: #b7a79b;
+      background: rgba(255,255,255,.30);
+      position: relative;
+      transition: .25s ease;
+    }
+
+    .stamp .star {
+      font-size: 26px;
+      line-height: 1;
+    }
+
+    .stamp.completed {
+      color: white;
+      border-color: var(--nude);
+      background: linear-gradient(145deg, #c7a080, #a77d5e);
+      box-shadow: 0 5px 13px rgba(141,103,77,.18);
+    }
+
+    .stamp.completed .star {
+      transform: scale(1.08);
+    }
+
+    /* PROGRESO */
+
+    .count {
+      text-align: center;
+      font-family: "Cormorant Garamond", serif;
+      font-size: 21px;
+      color: var(--brown);
+      margin-top: 4px;
+    }
+
+    .progress {
+      width: 100%;
+      height: 7px;
+      background: #e5d9ce;
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 11px 0 23px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #a77d5e, #c9a386);
+      border-radius: inherit;
+      transition: width .5s ease;
+    }
+
+    /* RECOMPENSAS */
+
+    .reward {
+      border-radius: 20px;
+      padding: 18px 17px;
+      background: linear-gradient(
+        135deg,
+        rgba(200,166,139,.18),
+        rgba(255,255,255,.65)
+      );
+      border: 1px solid rgba(176,132,98,.20);
+      text-align: center;
+      margin-bottom: 22px;
+    }
+
+    .reward-icon {
+      font-size: 27px;
+      margin-bottom: 5px;
+    }
+
+    .reward-title {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--brown);
+    }
+
+    .reward-text {
+      margin-top: 5px;
+      font-size: 12px;
+      line-height: 1.55;
+      color: #8b7565;
+    }
+
+    /* HISTORIAL */
+
+    .date {
+      text-align: center;
+      color: #a08b7c;
+      font-size: 11px;
+      margin-bottom: 25px;
+    }
+
+    .history {
+      border-top: 1px solid var(--line);
+      padding-top: 22px;
+    }
+
+    .history-title {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 24px;
+      color: var(--black);
+      text-align: center;
+      margin-bottom: 14px;
+    }
+
+    .history-empty {
+      text-align: center;
+      font-size: 12px;
+      color: #a59487;
+      padding: 9px 0;
+    }
+
+    .history-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 5px;
+      border-bottom: 1px solid rgba(141,103,77,.12);
+      font-size: 13px;
+      color: #796555;
+    }
+
+    .history-star {
+      width: 31px;
+      height: 31px;
+      flex: 0 0 31px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: white;
+      background: var(--nude);
+      font-size: 15px;
+    }
+
+    /* FOOTER */
+
+    .footer {
+      text-align: center;
+      padding: 25px 18px 5px;
+    }
+
+    .footer-line {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 17px;
+      color: #806b5d;
+    }
+
+    .instagram {
+      margin-top: 7px;
+      font-size: 11px;
+      letter-spacing: 1px;
+      color: #ad927e;
+    }
+
+    /* ESTADOS */
+
+    .state {
+      min-height: 650px;
+      padding: 55px 28px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+    }
+
+    .state-inner {
+      max-width: 320px;
+    }
+
+    .state-logo {
+      width: 110px;
+      height: 110px;
+      object-fit: contain;
+      margin-bottom: 20px;
+    }
+
+    .state h1 {
+      font-family: "Cormorant Garamond", serif;
+      color: var(--black);
+      font-size: 33px;
+      font-weight: 500;
+      margin-bottom: 9px;
+    }
+
+    .state p {
+      font-size: 13px;
+      line-height: 1.6;
+      color: #927c6b;
+    }
+
+    .spinner {
+      width: 31px;
+      height: 31px;
+      margin: 25px auto 0;
+      border-radius: 50%;
+      border: 2px solid #e1d5ca;
+      border-top-color: var(--nude-dark);
+      animation: spin .8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 390px) {
+      body {
+        padding: 10px 8px 30px;
+      }
+
+      .card {
+        border-radius: 29px;
+      }
+
+      .hero {
+        height: 285px;
+      }
+
+      .brand-name {
+        font-size: 34px;
+      }
+
+      .content {
+        padding-left: 19px;
+        padding-right: 19px;
+      }
+
+      .stamps {
+        gap: 11px 6px;
+      }
+
+      .stamp .star {
+        font-size: 23px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="page">
+
+    <!-- CARGANDO -->
+    <section id="loading" class="card state">
+      <div class="state-inner">
+        <img src="logo.png" class="state-logo" alt="The Porcelain Skin">
+        <h1>The Porcelain Skin</h1>
+        <p>Preparando tu tarjeta de fidelidad...</p>
+        <div class="spinner"></div>
+      </div>
+    </section>
+
+    <!-- ERROR -->
+    <section id="error" class="card state hidden">
+      <div class="state-inner">
+        <img src="logo.png" class="state-logo" alt="The Porcelain Skin">
+        <h1>Tarjeta no encontrada</h1>
+        <p id="errorMessage">
+          Este enlace no corresponde a una tarjeta activa.
+        </p>
+      </div>
+    </section>
+
+    <!-- TARJETA -->
+    <section id="loyaltyCard" class="card hidden">
+
+      <div class="hero">
+        <img
+          src="hero.jpg"
+          class="hero-image"
+          alt="The Porcelain Skin"
+        >
+      </div>
+
+      <div class="brand">
+        <div class="logo-wrap">
+          <img
+            src="logo.png"
+            class="logo"
+            alt="The Porcelain Skin"
+          >
+        </div>
+
+        <h1 class="brand-name">The Porcelain Skin</h1>
+
+        <p class="tagline">
+          Belleza que se convierte en arte
+        </p>
+
+        <div class="divider"></div>
+      </div>
+
+      <div class="content">
+
+        <div class="eyebrow">
+          Tarjeta de Fidelidad
+        </div>
+
+        <h2 id="clientName" class="client-name">
+          Clienta
+        </h2>
+
+        <div id="cardNumber" class="card-number"></div>
+
+        <p class="intro">
+          Cada tratamiento te acerca a un beneficio exclusivo.
+          Acumula sellos y desbloquea recompensas.
+        </p>
+
+        <div id="stamps" class="stamps"></div>
+
+        <div id="countText" class="count">
+          0 de 10 servicios
+        </div>
+
+        <div class="progress">
+          <div id="progressBar" class="progress-bar"></div>
+        </div>
+
+        <div id="reward" class="reward"></div>
+
+        <div id="createdDate" class="date"></div>
+
+        <section class="history">
+          <h3 class="history-title">
+            Historial de servicios
+          </h3>
+
+          <div id="historyList"></div>
+        </section>
+
+        <footer class="footer">
+          <div class="footer-line">
+            Cuidamos tu piel. Premiamos tu confianza.
+          </div>
+
+          <div class="instagram">
+            @theporcelainskin
+          </div>
+        </footer>
+
+      </div>
+    </section>
+
+  </main>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    /* ==========================================
+       THE PORCELAIN SKIN
+       CONEXIÓN CON SUPABASE
+       ========================================== */
+
+    const SUPABASE_URL =
+      "https://aedtqbpueeyvxoowttkn.supabase.co";
+
+    const SUPABASE_PUBLISHABLE_KEY =
+      "sb_publishable_Zl2a0N40GakZakvzUfcufg_yvcTIrI_";
+
+    const supabaseClient = supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
+
+
+    /* ==========================================
+       ELEMENTOS
+       ========================================== */
+
+    const loading = document.getElementById("loading");
+    const error = document.getElementById("error");
+    const errorMessage = document.getElementById("errorMessage");
+    const loyaltyCard = document.getElementById("loyaltyCard");
+
+    const clientName = document.getElementById("clientName");
+    const cardNumber = document.getElementById("cardNumber");
+    const stamps = document.getElementById("stamps");
+    const countText = document.getElementById("countText");
+    const progressBar = document.getElementById("progressBar");
+    const reward = document.getElementById("reward");
+    const createdDate = document.getElementById("createdDate");
+    const historyList = document.getElementById("historyList");
+
+
+    /* ==========================================
+       UTILIDADES
+       ========================================== */
+
+    function escapeHTML(value) {
+      const div = document.createElement("div");
+      div.textContent = value ?? "";
+      return div.innerHTML;
+    }
+
+    function formatDate(value) {
+      if (!value) return "";
+
+      const date = new Date(value);
+
+      if (Number.isNaN(date.getTime())) {
+        return String(value);
+      }
+
+      return new Intl.DateTimeFormat("es-US", {
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+      }).format(date);
+    }
+
+    function getToken() {
+      const params = new URLSearchParams(window.location.search);
+
+      /*
+        Aceptamos:
+        ?token=UUID
+        o
+        ?id=UUID
+
+        Así tenemos flexibilidad al crear los enlaces.
+      */
+
+      return params.get("token") || params.get("id");
+    }
+
+
+    /* ==========================================
+       SELLOS
+       ========================================== */
+
+    function renderStamps(serviceCount) {
+      stamps.innerHTML = "";
+
+      const count = Math.max(
+        0,
+        Math.min(10, Number(serviceCount) || 0)
+      );
+
+      for (let i = 1; i <= 10; i++) {
+        const stamp = document.createElement("div");
+
+        stamp.className =
+          "stamp" + (i <= count ? " completed" : "");
+
+        stamp.setAttribute(
+          "aria-label",
+          i <= count
+            ? `Servicio ${i} completado`
+            : `Servicio ${i} pendiente`
+        );
+
+        stamp.innerHTML = `
+          <span class="star">✦</span>
+        `;
+
+        stamps.appendChild(stamp);
+      }
+    }
+
+
+    /* ==========================================
+       RECOMPENSAS
+       ========================================== */
+
+    function renderReward(serviceCount) {
+      const count = Number(serviceCount) || 0;
+
+      if (count >= 10) {
+        reward.innerHTML = `
+          <div class="reward-icon">✦</div>
+
+          <div class="reward-title">
+            ¡Felicidades, hermosa!
+          </div>
+
+          <div class="reward-text">
+            Has alcanzado tu recompensa ✨
+            <strong>50% de descuento</strong>.
+          </div>
+        `;
+
+        return;
+      }
+
+      if (count >= 5) {
+        reward.innerHTML = `
+          <div class="reward-icon">✨</div>
+
+          <div class="reward-title">
+            ¡Primera recompensa desbloqueada!
+          </div>
+
+          <div class="reward-text">
+            Disfruta de
+            <strong>10% de descuento en tu próximo servicio.</strong>
+          </div>
+        `;
+
+        return;
+      }
+
+      const remaining = 5 - count;
+
+      reward.innerHTML = `
+        <div class="reward-icon">✦</div>
+
+        <div class="reward-title">
+          Tu próxima recompensa
+        </div>
+
+        <div class="reward-text">
+          Te ${remaining === 1 ? "falta" : "faltan"}
+          <strong>${remaining}
+          ${remaining === 1 ? "servicio" : "servicios"}</strong>
+          para desbloquear tu primer beneficio.
+        </div>
+      `;
+    }
+
+
+    /* ==========================================
+       HISTORIAL
+       ========================================== */
+
+    function renderHistory(history) {
+      historyList.innerHTML = "";
+
+      if (!Array.isArray(history) || history.length === 0) {
+        historyList.innerHTML = `
+          <div class="history-empty">
+            Aún no hay servicios registrados.
+          </div>
+        `;
+
+        return;
+      }
+
+      history.forEach((item, index) => {
+        const row = document.createElement("div");
+        row.className = "history-item";
+
+        /*
+          La función de Supabase puede devolver
+          fechas directamente o registros.
+        */
+
+        const rawDate =
+          typeof item === "string"
+            ? item
+            : (
+                item.service_date ||
+                item.created_at ||
+                item.date ||
+                ""
+              );
+
+        row.innerHTML = `
+          <div class="history-star">✦</div>
+
+          <div>
+            Servicio ${index + 1}
+            ${rawDate
+              ? " · " + escapeHTML(formatDate(rawDate))
+              : ""}
+          </div>
+        `;
+
+        historyList.appendChild(row);
+      });
+    }
+
+
+    /* ==========================================
+       MOSTRAR TARJETA
+       ========================================== */
+
+    function renderCard(data) {
+      const count = Math.max(
+        0,
+        Math.min(10, Number(data.services_count) || 0)
+      );
+
+      clientName.textContent =
+        data.client_name || "Clienta";
+
+      cardNumber.textContent =
+        data.card_number
+          ? `TARJETA Nº ${String(data.card_number).padStart(3, "0")}`
+          : "";
+
+      countText.textContent =
+        `${count} de 10 servicios`;
+
+      progressBar.style.width =
+        `${count * 10}%`;
+
+      createdDate.textContent =
+        data.created_at
+          ? `Desde: ${formatDate(data.created_at)}`
+          : "";
+
+      renderStamps(count);
+      renderReward(count);
+      renderHistory(data.service_history);
+
+      loading.classList.add("hidden");
+      error.classList.add("hidden");
+      loyaltyCard.classList.remove("hidden");
+    }
+
+
+    /* ==========================================
+       ERROR
+       ========================================== */
+
+    function showError(message) {
+      loading.classList.add("hidden");
+      loyaltyCard.classList.add("hidden");
+
+      errorMessage.textContent =
+        message ||
+        "No pudimos encontrar esta tarjeta.";
+
+      error.classList.remove("hidden");
+    }
+
+
+    /* ==========================================
+       CARGAR TARJETA DESDE SUPABASE
+       ========================================== */
+
+    async function loadLoyaltyCard() {
+      const token = getToken();
+
+      if (!token) {
+        showError(
+          "Este enlace no contiene una tarjeta de fidelidad válida."
+        );
+
+        return;
+      }
+
+      try {
+        /*
+          Usamos la función segura que ya creamos
+          en Supabase.
+
+          La clienta NO consulta directamente
+          toda la tabla loyalty_cards.
+        */
+
+        const { data, error: rpcError } =
+          await supabaseClient.rpc(
+            "get_loyalty_card",
+            {
+              p_share_token: token
+            }
+          );
+
+        if (rpcError) {
+          console.error(rpcError);
+
+          showError(
+            "No pudimos cargar tu tarjeta en este momento."
+          );
+
+          return;
+        }
+
+        if (!data || data.length === 0) {
+          showError(
+            "Esta tarjeta no existe o el enlace ya no es válido."
+          );
+
+          return;
+        }
+
+        renderCard(data[0]);
+
+      } catch (err) {
+        console.error(err);
+
+        showError(
+          "Ocurrió un problema al cargar tu tarjeta. Inténtalo nuevamente."
+        );
+      }
+    }
+
+
+    /* ==========================================
+       INICIAR
+       ========================================== */
+
+    loadLoyaltyCard();
+
+  </script>
+
+</body>
+</html>
