@@ -446,7 +446,15 @@ document
 
       const cardNumber =
         String(client.card_number).padStart(3, "0");
+const isCompleted =
+  client.services_count >= 10 && !client.archived;
 
+const statusText =
+  client.archived
+    ? "ARCHIVADA"
+    : isCompleted
+      ? "🎉 COMPLETADA"
+      : "ACTIVA";
       const cardLink =
         window.location.origin +
         "/?token=" +
@@ -474,7 +482,11 @@ document
             color:#806e64;
           ">
             Tarjeta N° ${cardNumber}
-            · ${client.services_count} de 10 servicios
+· ${client.services_count} de 10 servicios
+<br>
+<strong>
+  ${statusText}
+</strong>
           </div>
 
           <div style="
@@ -498,7 +510,18 @@ document
             </button>
 
           </div>
-
+${isCompleted ? `
+  <button
+    type="button"
+    style="margin-top:10px;"
+    onclick="startNewCard(
+      ${client.client_id},
+      ${client.card_id},
+      '${escapeAdminHTML(client.client_name)}'
+    )">
+    ✦ Crear nueva tarjeta
+  </button>
+` : ""}
         </div>
       `;
     }).join("");
@@ -734,7 +757,44 @@ document
         </div>
       `;
     }).join("");
-  });
+  });async function startNewCard(clientId, oldCardId, clientName) {
+
+  const confirmed = confirm(
+    `${clientName} completó sus 10 servicios.\n\n` +
+    "¿Quieres archivar esta tarjeta y crearle una nueva?"
+  );
+
+  if (!confirmed) return;
+
+  const { data, error } =
+    await supabaseClient.rpc("admin_start_new_card", {
+      p_client_id: clientId,
+      p_old_card_id: oldCardId
+    });
+
+  if (error) {
+    console.error(error);
+    alert("No se pudo crear la nueva tarjeta.");
+    return;
+  }
+
+  const newCard = data?.[0];
+
+  const newLink =
+    window.location.origin +
+    "/?token=" +
+    encodeURIComponent(newCard.share_token);
+
+  await navigator.clipboard.writeText(newLink);
+
+  alert(
+    `✓ Nueva tarjeta creada\n\n` +
+    `Tarjeta N° ${String(newCard.card_number).padStart(3, "0")}\n\n` +
+    "El nuevo enlace privado fue copiado."
+  );
+
+  location.reload();
+}
     protectPage();
   </script>
 
