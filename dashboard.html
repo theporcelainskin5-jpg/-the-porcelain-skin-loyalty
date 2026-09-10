@@ -462,11 +462,11 @@ const isCompleted =
   client.services_count >= 10 && !client.archived;
 const fiveRewardAvailable =
   client.services_count >= 5 &&
-  !client.five_reward_redeemed &&
+  !client.reward_5_redeemed &&
   !client.archived;
 
 const fiveRewardRedeemed =
-  client.five_reward_redeemed === true;
+  client.reward_5_redeemed === true;
 const statusText =
   client.archived
     ? "ARCHIVADA"
