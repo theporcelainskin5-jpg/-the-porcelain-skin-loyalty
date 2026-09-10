@@ -232,7 +232,7 @@
           </p>
           <button class="secondary" id="clientsButton">
             Ver clientas
-          </button>
+          </button><div id="clientsList" style="display:none; margin-top:20px;"></div>
         </div>
 
         <div class="card">
@@ -380,7 +380,119 @@ document
 
     document.getElementById("clientName").value = "";
     document.getElementById("clientBirthday").value = "";
+  });document
+  .getElementById("clientsButton")
+  .addEventListener("click", async () => {
+
+    const list = document.getElementById("clientsList");
+
+    if (list.style.display === "block") {
+      list.style.display = "none";
+      return;
+    }
+
+    list.style.display = "block";
+    list.innerHTML = "Cargando clientas...";
+
+    const { data, error } =
+      await supabaseClient.rpc("admin_list_clients");
+
+    if (error) {
+      console.error(error);
+      list.innerHTML =
+        "No se pudieron cargar las clientas.";
+      return;
+    }
+
+    if (!data || data.length === 0) {
+      list.innerHTML = "Todavía no tienes clientas.";
+      return;
+    }
+
+    list.innerHTML = data.map(client => {
+
+      const cardNumber =
+        String(client.card_number).padStart(3, "0");
+
+      const cardLink =
+        window.location.origin +
+        "/?token=" +
+        encodeURIComponent(client.share_token);
+
+      return `
+        <div style="
+          background:#f5eee8;
+          border:1px solid #dfd2c8;
+          border-radius:14px;
+          padding:16px;
+          margin-bottom:12px;
+        ">
+
+          <strong style="
+            font-family:Georgia,serif;
+            font-size:18px;
+          ">
+            ${escapeAdminHTML(client.client_name)}
+          </strong>
+
+          <div style="
+            margin-top:7px;
+            font-size:13px;
+            color:#806e64;
+          ">
+            Tarjeta N° ${cardNumber}
+            · ${client.services_count} de 10 servicios
+          </div>
+
+          <div style="
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:8px;
+            margin-top:14px;
+          ">
+
+            <button
+              type="button"
+              onclick="window.open('${cardLink}', '_blank')">
+              Ver tarjeta
+            </button>
+
+            <button
+              type="button"
+              class="secondary"
+              onclick="copyClientLink('${cardLink}', this)">
+              Copiar enlace
+            </button>
+
+          </div>
+
+        </div>
+      `;
+    }).join("");
   });
+
+
+function escapeAdminHTML(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+
+async function copyClientLink(link, button) {
+  await navigator.clipboard.writeText(link);
+
+  const originalText = button.textContent;
+
+  button.textContent = "✓ Copiado";
+
+  setTimeout(() => {
+    button.textContent = originalText;
+  }, 1500);
+}
     protectPage();
   </script>
 
