@@ -454,18 +454,37 @@ const archivedCards = data.filter(client => client.archived);
     const clientsWithActiveCard = new Set(
   activeCards.map(card => card.client_id)
 );
-    list.innerHTML = activeCards.map(client => {
+    list.innerHTML = (await Promise.all(activeCards.map(async client => {
 
       const cardNumber =
         String(client.card_number).padStart(3, "0");
 const isCompleted =
   client.services_count >= 10 && !client.archived;
+
 const fiveRewardRedeemed =
   client.five_reward_redeemed === true;
 
 const fiveRewardAvailable =
   client.services_count >= 5 &&
   !fiveRewardRedeemed &&
+  !client.archived;
+
+let tenRewardRedeemed = false;
+
+if (client.services_count >= 10 && !client.archived) {
+  const { data: tenRewardStatus, error: tenRewardError } =
+    await supabaseClient.rpc("admin_get_ten_reward_status", {
+      p_card_id: Number(client.card_id)
+    });
+
+  if (!tenRewardError) {
+    tenRewardRedeemed = tenRewardStatus === true;
+  }
+}
+
+const tenRewardAvailable =
+  client.services_count >= 10 &&
+  !tenRewardRedeemed &&
   !client.archived;
 const statusText =
   client.archived
@@ -550,6 +569,27 @@ const statusText =
     ✓ 10% CANJEADO
   </div>
 ` : ""}         
+${tenRewardAvailable ? `
+  <button
+    type="button"
+    style="margin-top:10px;"
+    onclick="redeemTenReward(${client.card_id}, this)">
+    ✦ Canjear 50% de descuento
+  </button>
+` : tenRewardRedeemed ? `
+  <div style="
+    margin-top:10px;
+    padding:11px;
+    border-radius:10px;
+    background:#e9ded5;
+    color:#5e493e;
+    text-align:center;
+    font-size:13px;
+    font-weight:bold;
+  ">
+    ✓ 50% CANJEADO
+  </div>
+` : ""}
 ${isCompleted ? `
   <button
     type="button"
@@ -563,7 +603,7 @@ ${isCompleted ? `
 ` : ""}
         </div>
       `;
-    }).join("");
+    }))).join("");
     if (archivedCards.length > 0) {
   list.innerHTML += `
     <details style="
@@ -698,6 +738,33 @@ async function redeemFiveReward(cardId, button) {
 
   alert("✓ Recompensa del 10% canjeada correctamente.");
   await loadClients();
+}
+    async function redeemTenReward(cardId, button) {
+  const originalText = button.textContent;
+
+  try {
+    button.disabled = true;
+    button.textContent = "Canjeando...";
+
+    const { error } = await supabaseClient.rpc(
+      "admin_redeem_ten_reward",
+      {
+        p_card_id: Number(cardId)
+      }
+    );
+
+    if (error) throw error;
+
+    alert("✓ Recompensa del 50% canjeada correctamente.");
+
+    await loadClients();
+
+  } catch (error) {
+    console.error(error);
+    alert("No se pudo canjear la recompensa del 50%.");
+    button.disabled = false;
+    button.textContent = originalText;
+  }
 }
 async function archiveCompletedCard(cardId, clientName) {
   const confirmed = confirm(
