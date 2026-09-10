@@ -287,7 +287,7 @@
           </p>
           <button class="secondary" id="birthdayButton">
             Ver cumpleaños
-          </button>
+          </button><div id="birthdayList" style="display:none; margin-top:20px;"></div>
         </div>
 
       </section>
@@ -655,6 +655,85 @@ document
     if (clientsList) {
       clientsList.style.display = "none";
     }
+  });document
+  .getElementById("birthdayButton")
+  .addEventListener("click", async () => {
+
+    const list = document.getElementById("birthdayList");
+
+    if (list.style.display === "block") {
+      list.style.display = "none";
+      return;
+    }
+
+    list.style.display = "block";
+    list.innerHTML = "Buscando próximos cumpleaños...";
+
+    const { data, error } =
+      await supabaseClient.rpc("admin_upcoming_birthdays", {
+        p_days: 30
+      });
+
+    if (error) {
+      console.error(error);
+      list.innerHTML =
+        "No se pudieron cargar los cumpleaños.";
+      return;
+    }
+
+    if (!data || data.length === 0) {
+      list.innerHTML =
+        "No hay cumpleaños en los próximos 30 días. 🎂";
+      return;
+    }
+
+    const months = [
+      "enero", "febrero", "marzo", "abril",
+      "mayo", "junio", "julio", "agosto",
+      "septiembre", "octubre", "noviembre", "diciembre"
+    ];
+
+    list.innerHTML = data.map(client => {
+
+      const parts = client.next_birthday.split("-");
+      const month = months[Number(parts[1]) - 1];
+      const day = Number(parts[2]);
+
+      let remaining;
+
+      if (client.days_until === 0) {
+        remaining = "🎉 ¡Cumpleaños hoy!";
+      } else if (client.days_until === 1) {
+        remaining = "Falta 1 día";
+      } else {
+        remaining = `Faltan ${client.days_until} días`;
+      }
+
+      return `
+        <div style="
+          background:#f5eee8;
+          border:1px solid #dfd2c8;
+          border-radius:14px;
+          padding:16px;
+          margin-bottom:10px;
+        ">
+          <strong style="
+            font-family:Georgia,serif;
+            font-size:18px;
+          ">
+            🎂 ${escapeAdminHTML(client.client_name)}
+          </strong>
+
+          <div style="
+            margin-top:7px;
+            color:#806e64;
+            font-size:14px;
+          ">
+            ${day} de ${month} · ${remaining}
+          </div>
+        </div>
+      `;
+    }).join("");
   });
     protectPage();
   </script>
