@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Administración | The Porcelain Skin</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #f5efe8;
+      color: #3f332d;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 430px;
+      background: #fffaf5;
+      border: 1px solid #dfd1c5;
+      border-radius: 24px;
+      padding: 38px 28px;
+      box-shadow: 0 15px 40px rgba(74, 55, 45, 0.08);
+    }
+
+    .brand {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .brand h1 {
+      font-family: Georgia, serif;
+      font-weight: normal;
+      font-size: 30px;
+      margin: 0 0 8px;
+    }
+
+    .brand p {
+      margin: 0;
+      color: #8b7467;
+      font-size: 14px;
+    }
+
+    h2 {
+      font-family: Georgia, serif;
+      font-weight: normal;
+      font-size: 23px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #806d62;
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+
+    label {
+      display: block;
+      margin: 16px 0 7px;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #d9ccc2;
+      border-radius: 12px;
+      background: white;
+      font-size: 16px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #9a7b69;
+    }
+
+    button {
+      width: 100%;
+      border: 0;
+      border-radius: 12px;
+      padding: 15px;
+      margin-top: 22px;
+      background: #6f5548;
+      color: white;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+    }
+
+    #message {
+      min-height: 20px;
+      margin-top: 16px;
+      text-align: center;
+      font-size: 13px;
+    }
+
+    .error {
+      color: #a34242;
+    }
+
+    .success {
+      color: #547257;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 30px;
+      font-family: Georgia, serif;
+      color: #8b7467;
+      font-size: 13px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="login-card">
+
+    <div class="brand">
+      <h1>The Porcelain Skin</h1>
+      <p>Belleza que se convierte en arte</p>
+    </div>
+
+    <h2>Panel de administración</h2>
+
+    <p class="subtitle">
+      Inicia sesión para administrar tus clientas y sus tarjetas de fidelidad.
+    </p>
+
+    <form id="loginForm">
+
+      <label for="email">Correo electrónico</label>
+      <input
+        id="email"
+        type="email"
+        autocomplete="email"
+        required
+      >
+
+      <label for="password">Contraseña</label>
+      <input
+        id="password"
+        type="password"
+        autocomplete="current-password"
+        required
+      >
+
+      <button id="loginButton" type="submit">
+        Iniciar sesión
+      </button>
+
+      <div id="message"></div>
+
+    </form>
+
+    <div class="footer">
+      @theporcelainskin
+    </div>
+
+  </main>
+
+  <script>
+    const SUPABASE_URL =
+      "https://aedtqbpueeyvxoowttkn.supabase.co";
+
+    const SUPABASE_PUBLISHABLE_KEY =
+      "sb_publishable_Zl2a0N40GakZakvzUfcufg_yvcTIrI_";
+
+    const supabaseClient = supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
+
+    const loginForm = document.getElementById("loginForm");
+    const loginButton = document.getElementById("loginButton");
+    const message = document.getElementById("message");
+
+    loginForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      message.textContent = "";
+      message.className = "";
+
+      loginButton.disabled = true;
+      loginButton.textContent = "Entrando...";
+
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      const { data, error } =
+        await supabaseClient.auth.signInWithPassword({
+          email,
+          password
+        });
+
+      loginButton.disabled = false;
+      loginButton.textContent = "Iniciar sesión";
+
+      if (error) {
+        console.error(error);
+        message.textContent =
+          "No se pudo iniciar sesión. Revisa el correo y la contraseña.";
+        message.className = "error";
+        return;
+      }
+
+      if (data.user) {
+        message.textContent = "✓ Acceso correcto";
+        message.className = "success";
+
+        setTimeout(() => {
+          window.location.href = "dashboard.html";
+        }, 700);
+      }
+    });
+  </script>
+
+</body>
+</html>
