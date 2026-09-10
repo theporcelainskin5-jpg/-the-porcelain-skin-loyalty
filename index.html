@@ -535,7 +535,47 @@
 
           <div id="historyList"></div>
         </section>
+<div style="text-align:center; margin:24px 0 28px;">
+  <button
+    type="button"
+    onclick="showSaveInstructions()"
+    style="
+      background:#8d674d;
+      color:white;
+      border:none;
+      border-radius:30px;
+      padding:13px 22px;
+      font-size:14px;
+      font-weight:600;
+      cursor:pointer;
+    "
+  >
+    ✦ Guardar mi tarjeta en iPhone
+  </button>
 
+  <div
+    id="saveInstructions"
+    style="
+      display:none;
+      margin:16px auto 0;
+      max-width:320px;
+      padding:18px;
+      background:#f5efe9;
+      border-radius:14px;
+      color:#5e493e;
+      font-size:13px;
+      line-height:1.7;
+      text-align:left;
+    "
+  >
+    <strong>Guarda tu tarjeta en tu iPhone ✨</strong><br><br>
+    1. Toca el botón Compartir ↑ en Safari.<br>
+    2. Selecciona “Add to Home Screen”.<br>
+    3. Deja activado “Open as Web App”.<br>
+    4. Toca “Add”.<br><br>
+    Así tendrás tu tarjeta de The Porcelain Skin siempre a mano.
+  </div>
+</div>
         <footer class="footer">
           <div class="footer-line">
             Cuidamos tu piel. Premiamos tu confianza.
@@ -555,6 +595,15 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
+    function showSaveInstructions() {
+  const instructions = document.getElementById("saveInstructions");
+
+  if (instructions.style.display === "none" || !instructions.style.display) {
+    instructions.style.display = "block";
+  } else {
+    instructions.style.display = "none";
+  }
+}
     /* ==========================================
        THE PORCELAIN SKIN
        CONEXIÓN CON SUPABASE
