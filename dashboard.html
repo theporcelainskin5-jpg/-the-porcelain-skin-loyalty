@@ -243,7 +243,40 @@
           </p>
           <button class="secondary" id="serviceButton">
             Agregar servicio
-          </button>
+          </button><div id="serviceForm" style="display:none; margin-top:20px;">
+
+  <label for="serviceClient">Clienta</label>
+  <select
+    id="serviceClient"
+    style="width:100%; padding:14px; margin:7px 0 15px; border:1px solid #d9ccc2; border-radius:12px; font-size:16px; background:white;">
+    <option value="">Selecciona una clienta</option>
+  </select>
+
+  <label for="serviceName">Servicio realizado</label>
+  <input
+    id="serviceName"
+    type="text"
+    placeholder="Ej. Limpieza facial"
+    style="width:100%; padding:14px; margin:7px 0 15px; border:1px solid #d9ccc2; border-radius:12px; font-size:16px;"
+  >
+
+  <label for="serviceDate">Fecha del servicio</label>
+  <input
+    id="serviceDate"
+    type="date"
+    style="width:100%; padding:14px; margin:7px 0 15px; border:1px solid #d9ccc2; border-radius:12px; font-size:16px;"
+  >
+
+  <button id="saveServiceButton" type="button">
+    Guardar servicio
+  </button>
+
+  <div
+    id="serviceMessage"
+    style="margin-top:14px; font-size:14px; line-height:1.5;">
+  </div>
+
+</div>
         </div>
 
         <div class="card">
@@ -492,7 +525,137 @@ async function copyClientLink(link, button) {
   setTimeout(() => {
     button.textContent = originalText;
   }, 1500);
-}
+}document
+  .getElementById("serviceButton")
+  .addEventListener("click", async () => {
+
+    const form = document.getElementById("serviceForm");
+    const select = document.getElementById("serviceClient");
+    const message = document.getElementById("serviceMessage");
+
+    if (form.style.display === "block") {
+      form.style.display = "none";
+      return;
+    }
+
+    form.style.display = "block";
+    message.textContent = "";
+
+    const today = new Date();
+    const localToday =
+      today.getFullYear() + "-" +
+      String(today.getMonth() + 1).padStart(2, "0") + "-" +
+      String(today.getDate()).padStart(2, "0");
+
+    document.getElementById("serviceDate").value = localToday;
+
+    select.innerHTML =
+      '<option value="">Cargando clientas...</option>';
+
+    const { data, error } =
+      await supabaseClient.rpc("admin_list_clients");
+
+    if (error) {
+      console.error(error);
+      select.innerHTML =
+        '<option value="">No se pudieron cargar</option>';
+      return;
+    }
+
+    select.innerHTML =
+      '<option value="">Selecciona una clienta</option>' +
+      data.map(client => {
+        return `
+          <option value="${client.card_id}">
+            ${escapeAdminHTML(client.client_name)}
+            — Tarjeta ${String(client.card_number).padStart(3, "0")}
+            (${client.services_count}/10)
+          </option>
+        `;
+      }).join("");
+  });
+
+
+document
+  .getElementById("saveServiceButton")
+  .addEventListener("click", async () => {
+
+    const cardId =
+      document.getElementById("serviceClient").value;
+
+    const serviceName =
+      document.getElementById("serviceName").value.trim();
+
+    const serviceDate =
+      document.getElementById("serviceDate").value;
+
+    const message =
+      document.getElementById("serviceMessage");
+
+    const button =
+      document.getElementById("saveServiceButton");
+
+    message.textContent = "";
+
+    if (!cardId) {
+      message.textContent = "Selecciona una clienta.";
+      return;
+    }
+
+    if (!serviceName) {
+      message.textContent = "Escribe el servicio realizado.";
+      return;
+    }
+
+    if (!serviceDate) {
+      message.textContent = "Selecciona la fecha del servicio.";
+      return;
+    }
+
+    button.disabled = true;
+    button.textContent = "Guardando...";
+
+    const { data, error } =
+      await supabaseClient.rpc("admin_add_service", {
+        p_card_id: Number(cardId),
+        p_service_name: serviceName,
+        p_service_date: serviceDate
+      });
+
+    button.disabled = false;
+    button.textContent = "Guardar servicio";
+
+    if (error) {
+      console.error(error);
+
+      if (error.message?.includes("Card already completed")) {
+        message.textContent =
+          "Esta tarjeta ya completó sus 10 servicios.";
+      } else {
+        message.textContent =
+          "No se pudo registrar el servicio.";
+      }
+
+      return;
+    }
+
+    const newCount = data?.[0]?.services_count;
+
+    message.innerHTML =
+      "✓ Servicio registrado correctamente.<br>" +
+      "La tarjeta ahora tiene " +
+      newCount +
+      " de 10 servicios.";
+
+    document.getElementById("serviceName").value = "";
+
+    const clientsList =
+      document.getElementById("clientsList");
+
+    if (clientsList) {
+      clientsList.style.display = "none";
+    }
+  });
     protectPage();
   </script>
 
