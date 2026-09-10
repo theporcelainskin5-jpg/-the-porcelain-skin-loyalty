@@ -355,10 +355,28 @@ document
 
     const card = data?.[0];
 
-    message.innerHTML =
-      "✓ Clienta creada correctamente.<br>" +
-      "Tarjeta N° " +
-      String(card.card_number).padStart(3, "0");
+    const cardLink =
+  window.location.origin +
+  "/?token=" +
+  encodeURIComponent(card.share_token);
+
+message.innerHTML =
+  "✓ Clienta creada correctamente.<br>" +
+  "Tarjeta N° " +
+  String(card.card_number).padStart(3, "0") +
+  "<br><br>" +
+  '<button type="button" id="copyCardLinkButton">' +
+  "Copiar enlace de la tarjeta" +
+  "</button>";
+
+document
+  .getElementById("copyCardLinkButton")
+  .addEventListener("click", async () => {
+    await navigator.clipboard.writeText(cardLink);
+
+    document.getElementById("copyCardLinkButton").textContent =
+      "✓ Enlace copiado";
+  });
 
     document.getElementById("clientName").value = "";
     document.getElementById("clientBirthday").value = "";
