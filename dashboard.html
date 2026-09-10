@@ -853,20 +853,17 @@ document
 
     if (error) {
       console.error(error);
-      message.textContent = "No se pudo corregir el último servicio.";
-      return;
-    }
+message.textContent = "✓ Último servicio eliminado correctamente.";
 
-    message.textContent = "✓ Último servicio eliminado correctamente.";
 const currentCardId = cardId;
-    await loadClients();
-    await loadServiceClients();
-    const serviceClient = document.getElementById("serviceClient");
+
+await loadClients();
+await loadServiceClients();
+
+const serviceClient = document.getElementById("serviceClient");
 serviceClient.value = String(currentCardId);
 serviceClient.dispatchEvent(new Event("change"));
-    const serviceClient = document.getElementById("serviceClient");
-serviceClient.value = String(cardId);
-serviceClient.dispatchEvent(new Event("change"));
+});
     
     document
   .getElementById("birthdayButton")
