@@ -460,7 +460,13 @@ const archivedCards = data.filter(client => client.archived);
         String(client.card_number).padStart(3, "0");
 const isCompleted =
   client.services_count >= 10 && !client.archived;
+const fiveRewardAvailable =
+  client.services_count >= 5 &&
+  !client.five_reward_redeemed &&
+  !client.archived;
 
+const fiveRewardRedeemed =
+  client.five_reward_redeemed === true;
 const statusText =
   client.archived
     ? "ARCHIVADA"
@@ -522,6 +528,28 @@ const statusText =
             </button>
 
           </div>
+ ${fiveRewardAvailable ? `
+  <button
+    type="button"
+    class="secondary"
+    style="margin-top:10px;"
+    onclick="redeemFiveReward(${client.card_id}, this)">
+    ✦ Canjear 10% de descuento
+  </button>
+` : fiveRewardRedeemed ? `
+  <div style="
+    margin-top:10px;
+    padding:11px;
+    border-radius:10px;
+    background:#e9ded5;
+    color:#5e493e;
+    text-align:center;
+    font-size:13px;
+    font-weight:bold;
+  ">
+    ✓ 10% CANJEADO
+  </div>
+` : ""}         
 ${isCompleted ? `
   <button
     type="button"
@@ -643,7 +671,34 @@ function escapeAdminHTML(value) {
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
 }
+async function redeemFiveReward(cardId, button) {
+  const confirmed = confirm(
+    "¿Confirmas que esta clienta está usando ahora su 10% de descuento?"
+  );
 
+  if (!confirmed) return;
+
+  button.disabled = true;
+  button.textContent = "Canjeando...";
+
+  const { error } = await supabaseClient.rpc(
+    "admin_redeem_five_reward",
+    {
+      p_card_id: Number(cardId)
+    }
+  );
+
+  if (error) {
+    console.error(error);
+    alert("No se pudo canjear la recompensa.");
+    button.disabled = false;
+    button.textContent = "✦ Canjear 10% de descuento";
+    return;
+  }
+
+  alert("✓ Recompensa del 10% canjeada correctamente.");
+  await loadClients();
+}
 async function archiveCompletedCard(cardId, clientName) {
   const confirmed = confirm(
     `¿Archivar la tarjeta completada de ${clientName}?`
