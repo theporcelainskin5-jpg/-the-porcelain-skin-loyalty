@@ -537,6 +537,7 @@
         </section>
 <div style="text-align:center; margin:24px 0 28px;">
   <button
+    id="saveCardButton"
     type="button"
     onclick="showSaveInstructions()"
     style="
@@ -624,6 +625,26 @@
 
   instructions.style.display = "block";
 }
+    function hideSaveButtonIfInstalled() {
+  const isStandalone =
+    window.matchMedia("(display-mode: standalone)").matches ||
+    window.navigator.standalone === true;
+
+  if (isStandalone) {
+    const saveButton = document.getElementById("saveCardButton");
+    const instructions = document.getElementById("saveInstructions");
+
+    if (saveButton) {
+      saveButton.style.display = "none";
+    }
+
+    if (instructions) {
+      instructions.style.display = "none";
+    }
+  }
+}
+
+hideSaveButtonIfInstalled();
     /* ==========================================
        THE PORCELAIN SKIN
        CONEXIÓN CON SUPABASE
