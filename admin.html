@@ -271,11 +271,14 @@ const forgotPasswordButton =
   forgotPasswordButton.textContent = "¿Olvidaste tu contraseña?";
 
   if (error) {
-    console.error(error);
-    message.textContent = "No se pudo enviar el correo de recuperación.";
-    message.className = "error";
-    return;
-  }
+  console.error(error);
+
+  message.textContent =
+    "Error: " + (error.message || "No se pudo enviar el correo de recuperación.");
+
+  message.className = "error";
+  return;
+}
 
   message.textContent =
     "✓ Revisa tu correo. Te enviamos un enlace para cambiar tu contraseña.";
