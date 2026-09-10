@@ -774,7 +774,7 @@ document
 
   if (error) {
     console.error(error);
-    alert("No se pudo crear la nueva tarjeta.");
+    alert("Error: " + (error.message || JSON.stringify(error)));
     return;
   }
 
