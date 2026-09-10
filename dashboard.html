@@ -803,8 +803,12 @@ document
     if (clientsList) {
       clientsList.style.display = "none";
     }
+    const currentCardId = cardId;
   await loadClients(); 
   await loadServiceClients();
+    const serviceClient = document.getElementById("serviceClient");
+serviceClient.value = String(currentCardId);
+serviceClient.dispatchEvent(new Event("change"));
   });
     document.getElementById("serviceName").disabled = true;
 document.getElementById("serviceDate").disabled = true;
@@ -854,9 +858,12 @@ document
     }
 
     message.textContent = "✓ Último servicio eliminado correctamente.";
-
+const currentCardId = cardId;
     await loadClients();
     await loadServiceClients();
+    const serviceClient = document.getElementById("serviceClient");
+serviceClient.value = String(currentCardId);
+serviceClient.dispatchEvent(new Event("change"));
     const serviceClient = document.getElementById("serviceClient");
 serviceClient.value = String(cardId);
 serviceClient.dispatchEvent(new Event("change"));
