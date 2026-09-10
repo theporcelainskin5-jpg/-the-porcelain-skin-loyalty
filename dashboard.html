@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Panel | The Porcelain Skin</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: #f4eee8;
+      color: #493a33;
+      font-family: Arial, sans-serif;
+    }
+
+    .top {
+      background: #fffaf6;
+      border-bottom: 1px solid #e2d6cc;
+      padding: 24px 20px;
+    }
+
+    .top-inner {
+      max-width: 800px;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-family: Georgia, serif;
+      font-size: 25px;
+      font-weight: normal;
+    }
+
+    .brand p {
+      margin: 5px 0 0;
+      color: #927d70;
+      font-size: 12px;
+    }
+
+    .logout {
+      width: auto;
+      margin: 0;
+      padding: 10px 14px;
+      background: transparent;
+      color: #72594c;
+      border: 1px solid #cdbdb2;
+    }
+
+    main {
+      max-width: 800px;
+      margin: auto;
+      padding: 28px 18px 50px;
+    }
+
+    .welcome {
+      margin-bottom: 25px;
+    }
+
+    .welcome h2 {
+      font-family: Georgia, serif;
+      font-weight: normal;
+      font-size: 29px;
+      margin: 0 0 7px;
+    }
+
+    .welcome p {
+      color: #826e63;
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .card {
+      background: #fffaf6;
+      border: 1px solid #dfd2c8;
+      border-radius: 20px;
+      padding: 23px;
+      box-shadow: 0 8px 25px rgba(70, 52, 43, .05);
+    }
+
+    .icon {
+      font-size: 25px;
+      margin-bottom: 12px;
+    }
+
+    .card h3 {
+      font-family: Georgia, serif;
+      font-weight: normal;
+      font-size: 21px;
+      margin: 0 0 7px;
+    }
+
+    .card p {
+      color: #806e64;
+      font-size: 14px;
+      line-height: 1.5;
+      margin: 0 0 17px;
+    }
+
+    button {
+      width: 100%;
+      border: 0;
+      border-radius: 12px;
+      padding: 14px;
+      background: #73594b;
+      color: white;
+      font-weight: bold;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .secondary {
+      background: #e9ded5;
+      color: #5e493e;
+    }
+
+    #loading {
+      text-align: center;
+      padding: 70px 20px;
+      color: #806e64;
+    }
+
+    #dashboard {
+      display: none;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 35px;
+      color: #9a877b;
+      font-family: Georgia, serif;
+      font-size: 13px;
+    }
+
+    @media (min-width: 650px) {
+      .grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="loading">
+    Verificando acceso...
+  </div>
+
+  <div id="dashboard">
+
+    <header class="top">
+      <div class="top-inner">
+
+        <div class="brand">
+          <h1>The Porcelain Skin</h1>
+          <p>Belleza que se convierte en arte</p>
+        </div>
+
+        <button class="logout" id="logoutButton">
+          Salir
+        </button>
+
+      </div>
+    </header>
+
+    <main>
+
+      <section class="welcome">
+        <h2>Mi Panel</h2>
+        <p>
+          Administra tus clientas y sus tarjetas de fidelidad.
+        </p>
+      </section>
+
+      <section class="grid">
+
+        <div class="card">
+          <div class="icon">✦</div>
+          <h3>Nueva clienta</h3>
+          <p>
+            Crea una clienta y genera su tarjeta de fidelidad.
+          </p>
+          <button id="newClientButton">
+            Crear clienta
+          </button>
+        </div>
+
+        <div class="card">
+          <div class="icon">♡</div>
+          <h3>Mis clientas</h3>
+          <p>
+            Consulta tarjetas, registra servicios y comparte enlaces.
+          </p>
+          <button class="secondary" id="clientsButton">
+            Ver clientas
+          </button>
+        </div>
+
+        <div class="card">
+          <div class="icon">＋</div>
+          <h3>Registrar servicio</h3>
+          <p>
+            Agrega un nuevo servicio a una tarjeta existente.
+          </p>
+          <button class="secondary" id="serviceButton">
+            Agregar servicio
+          </button>
+        </div>
+
+        <div class="card">
+          <div class="icon">🎂</div>
+          <h3>Próximos cumpleaños</h3>
+          <p>
+            Revisa las clientas que cumplen años próximamente.
+          </p>
+          <button class="secondary" id="birthdayButton">
+            Ver cumpleaños
+          </button>
+        </div>
+
+      </section>
+
+      <div class="footer">
+        @theporcelainskin
+      </div>
+
+    </main>
+
+  </div>
+
+  <script>
+    const SUPABASE_URL =
+      "https://aedtqbpueeyvxoowttkn.supabase.co";
+
+    const SUPABASE_PUBLISHABLE_KEY =
+      "sb_publishable_Zl2a0N40GakZakvzUfcufg_yvcTIrI_";
+
+    const supabaseClient = supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
+
+    async function protectPage() {
+
+      const { data, error } =
+        await supabaseClient.auth.getSession();
+
+      if (error || !data.session) {
+        window.location.replace("admin.html");
+        return;
+      }
+
+      document.getElementById("loading").style.display = "none";
+      document.getElementById("dashboard").style.display = "block";
+    }
+
+    document
+      .getElementById("logoutButton")
+      .addEventListener("click", async () => {
+
+        await supabaseClient.auth.signOut();
+
+        window.location.replace("admin.html");
+      });
+
+    protectPage();
+  </script>
+
+</body>
+</html>
