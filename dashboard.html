@@ -443,6 +443,9 @@ document
     }
 const activeCards = data.filter(client => !client.archived);
 const archivedCards = data.filter(client => client.archived);
+    const clientsWithActiveCard = new Set(
+  activeCards.map(card => card.client_id)
+);
     list.innerHTML = activeCards.map(client => {
 
       const cardNumber =
@@ -515,12 +518,11 @@ ${isCompleted ? `
   <button
     type="button"
     style="margin-top:10px;"
-    onclick="startNewCard(
-      ${client.client_id},
+    onclick="archiveCompletedCard(
       ${client.card_id},
       '${escapeAdminHTML(client.client_name)}'
     )">
-    ✦ Crear nueva tarjeta
+    ✓ Archivar tarjeta
   </button>
 ` : ""}
         </div>
@@ -598,6 +600,18 @@ ${isCompleted ? `
                   Copiar enlace
                 </button>
               </div>
+              ${!clientsWithActiveCard.has(client.client_id) ? `
+  <button
+    type="button"
+    style="margin-top:10px;"
+    onclick="startNewCard(
+      ${client.client_id},
+      ${client.card_id},
+      '${escapeAdminHTML(client.client_name)}'
+    )">
+    ✦ Crear nueva tarjeta
+  </button>
+` : ""}
             </div>
           `;
         }).join("")}
@@ -617,7 +631,31 @@ function escapeAdminHTML(value) {
     .replaceAll("'", "&#039;");
 }
 
+async function archiveCompletedCard(cardId, clientName) {
+  const confirmed = confirm(
+    `¿Archivar la tarjeta completada de ${clientName}?`
+  );
 
+  if (!confirmed) return;
+
+  const { error } = await supabase
+    .from("loyalty_cards")
+    .update({
+      archived: true,
+      status: "archived",
+      completed_date: new Date().toISOString().split("T")[0]
+    })
+    .eq("id", cardId);
+
+  if (error) {
+    console.error(error);
+    alert("No se pudo archivar la tarjeta.");
+    return;
+  }
+
+  alert(`✓ Tarjeta de ${clientName} archivada correctamente.`);
+  await loadClients();
+}
 async function copyClientLink(link, button) {
   await navigator.clipboard.writeText(link);
 
