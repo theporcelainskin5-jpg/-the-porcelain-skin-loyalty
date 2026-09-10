@@ -195,7 +195,33 @@
           </p>
           <button id="newClientButton">
             Crear clienta
-          </button>
+          </button><div id="newClientForm" style="display:none; margin-top:20px;">
+
+  <label for="clientName">Nombre de la clienta</label>
+  <input
+    id="clientName"
+    type="text"
+    placeholder="Ej. María González"
+    style="width:100%; padding:14px; margin:7px 0 15px; border:1px solid #d9ccc2; border-radius:12px; font-size:16px;"
+  >
+
+  <label for="clientBirthday">Cumpleaños</label>
+  <input
+    id="clientBirthday"
+    type="date"
+    style="width:100%; padding:14px; margin:7px 0 15px; border:1px solid #d9ccc2; border-radius:12px; font-size:16px;"
+  >
+
+  <button id="saveClientButton" type="button">
+    Crear tarjeta
+  </button>
+
+  <div
+    id="clientMessage"
+    style="margin-top:14px; font-size:14px; line-height:1.5;">
+  </div>
+
+</div>
         </div>
 
         <div class="card">
@@ -275,7 +301,68 @@
 
         window.location.replace("admin.html");
       });
+document
+  .getElementById("newClientButton")
+  .addEventListener("click", () => {
+    const form = document.getElementById("newClientForm");
 
+    form.style.display =
+      form.style.display === "none" ? "block" : "none";
+  });
+
+document
+  .getElementById("saveClientButton")
+  .addEventListener("click", async () => {
+
+    const name =
+      document.getElementById("clientName").value.trim();
+
+    const birthday =
+      document.getElementById("clientBirthday").value || null;
+
+    const message =
+      document.getElementById("clientMessage");
+
+    const button =
+      document.getElementById("saveClientButton");
+
+    message.textContent = "";
+
+    if (!name) {
+      message.textContent =
+        "Escribe el nombre de la clienta.";
+      return;
+    }
+
+    button.disabled = true;
+    button.textContent = "Creando...";
+
+    const { data, error } =
+      await supabaseClient.rpc("admin_create_client", {
+        p_client_name: name,
+        p_birthday: birthday
+      });
+
+    button.disabled = false;
+    button.textContent = "Crear tarjeta";
+
+    if (error) {
+      console.error(error);
+      message.textContent =
+        "No se pudo crear la tarjeta. Inténtalo nuevamente.";
+      return;
+    }
+
+    const card = data?.[0];
+
+    message.innerHTML =
+      "✓ Clienta creada correctamente.<br>" +
+      "Tarjeta N° " +
+      String(card.card_number).padStart(3, "0");
+
+    document.getElementById("clientName").value = "";
+    document.getElementById("clientBirthday").value = "";
+  });
     protectPage();
   </script>
 
