@@ -526,10 +526,10 @@ ${isCompleted ? `
   <button
     type="button"
     style="margin-top:10px;"
-    onclick="archiveCompletedCard(
-      ${client.card_id},
-      '${escapeAdminHTML(client.client_name)}'
-    )">
+    onclick='archiveCompletedCard(
+  ${client.card_id},
+  ${JSON.stringify(client.client_name)}
+)'>
     ✓ Archivar tarjeta
   </button>
 ` : ""}
@@ -612,11 +612,11 @@ ${isCompleted ? `
   <button
     type="button"
     style="margin-top:10px;"
-    onclick="startNewCard(
-      ${client.client_id},
-      ${client.card_id},
-      '${escapeAdminHTML(client.client_name)}'
-    )">
+    onclick='startNewCard(
+  ${client.client_id},
+  ${client.card_id},
+  ${JSON.stringify(client.client_name)}
+)'>
     ✦ Crear nueva tarjeta
   </button>
 ` : ""}
@@ -651,14 +651,12 @@ async function archiveCompletedCard(cardId, clientName) {
 
   if (!confirmed) return;
 
-  const { error } = await supabaseClient
-    .from("loyalty_cards")
-    .update({
-      archived: true,
-      status: "archived",
-      completed_date: new Date().toISOString().split("T")[0]
-    })
-    .eq("id", cardId);
+  const { error } = await supabaseClient.rpc(
+  "admin_archive_card",
+  {
+    p_card_id: Number(cardId)
+  }
+);
 
   if (error) {
     console.error(error);
