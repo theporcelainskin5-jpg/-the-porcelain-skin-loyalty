@@ -420,7 +420,8 @@ document
 
     document.getElementById("clientName").value = "";
     document.getElementById("clientBirthday").value = "";
-  });document
+  });
+    document
   .getElementById("clientsButton")
   .addEventListener("click", async () => {
 
@@ -628,7 +629,12 @@ ${isCompleted ? `
 }
   });
 
+async function loadClients() {
+  const list = document.getElementById("clientsList");
 
+  list.style.display = "none";
+  document.getElementById("clientsButton").click();
+}
 function escapeAdminHTML(value) {
   return String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -645,7 +651,7 @@ async function archiveCompletedCard(cardId, clientName) {
 
   if (!confirmed) return;
 
-  const { error } = await supabase
+  const { error } = await supabaseClient
     .from("loyalty_cards")
     .update({
       archived: true,
@@ -673,7 +679,36 @@ async function copyClientLink(link, button) {
   setTimeout(() => {
     button.textContent = originalText;
   }, 1500);
-}document
+}
+ async function loadServiceClients() {
+  const select = document.getElementById("serviceClient");
+
+  const { data, error } =
+    await supabaseClient.rpc("admin_list_clients");
+
+  if (error) {
+    console.error(error);
+    select.innerHTML =
+      '<option value="">No se pudieron cargar</option>';
+    return;
+  }
+
+  select.innerHTML =
+    '<option value="">Selecciona una clienta</option>' +
+    data
+      .filter(client => !client.archived)
+      .map(client => {
+        return `
+          <option value="${client.card_id}">
+            ${escapeAdminHTML(client.client_name)}
+            — Tarjeta ${String(client.card_number).padStart(3, "0")}
+            (${client.services_count}/10)
+          </option>
+        `;
+      })
+      .join("");
+}   
+    document
   .getElementById("serviceButton")
   .addEventListener("click", async () => {
 
@@ -853,18 +888,21 @@ document
 
     if (error) {
       console.error(error);
-message.textContent = "✓ Último servicio eliminado correctamente.";
+      message.textContent = "No se pudo corregir el último servicio.";
+      return;
+    }
 
-const currentCardId = cardId;
+    message.textContent = "✓ Último servicio eliminado correctamente.";
 
-await loadClients();
-await loadServiceClients();
+    const currentCardId = cardId;
 
-const serviceClient = document.getElementById("serviceClient");
-serviceClient.value = String(currentCardId);
-serviceClient.dispatchEvent(new Event("change"));
-});
-    
+    await loadClients();
+    await loadServiceClients();
+
+    const serviceClient = document.getElementById("serviceClient");
+    serviceClient.value = String(currentCardId);
+    serviceClient.dispatchEvent(new Event("change"));
+  });
     document
   .getElementById("birthdayButton")
   .addEventListener("click", async () => {
