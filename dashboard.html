@@ -460,13 +460,13 @@ const archivedCards = data.filter(client => client.archived);
         String(client.card_number).padStart(3, "0");
 const isCompleted =
   client.services_count >= 10 && !client.archived;
+const fiveRewardRedeemed =
+  client.five_reward_redeemed === true;
+
 const fiveRewardAvailable =
   client.services_count >= 5 &&
-  !client.reward_5_redeemed &&
+  !fiveRewardRedeemed &&
   !client.archived;
-
-const fiveRewardRedeemed =
-  client.reward_5_redeemed === true;
 const statusText =
   client.archived
     ? "ARCHIVADA"
