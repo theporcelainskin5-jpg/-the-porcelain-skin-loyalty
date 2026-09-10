@@ -270,7 +270,14 @@
   <button id="saveServiceButton" type="button">
     Guardar servicio
   </button>
-
+<button
+  id="removeLastServiceButton"
+  type="button"
+  class="secondary"
+  style="margin-top:10px;"
+>
+  Corregir último servicio
+</button>
   <div
     id="serviceMessage"
     style="margin-top:14px; font-size:14px; line-height:1.5;">
@@ -798,7 +805,25 @@ document
     }
   await loadClients(); 
   await loadServiceClients();
-  });document
+  });
+    document.getElementById("serviceName").disabled = true;
+document.getElementById("serviceDate").disabled = true;
+document.getElementById("saveServiceButton").disabled = true;
+    document
+  .getElementById("serviceClient")
+  .addEventListener("change", function () {
+    const selectedCardId = this.value;
+    const serviceName = document.getElementById("serviceName");
+    const serviceDate = document.getElementById("serviceDate");
+    const saveButton = document.getElementById("saveServiceButton");
+
+    const enabled = selectedCardId !== "";
+
+    serviceName.disabled = !enabled;
+    serviceDate.disabled = !enabled;
+    saveButton.disabled = !enabled;
+  });
+    document
   .getElementById("birthdayButton")
   .addEventListener("click", async () => {
 
@@ -836,7 +861,7 @@ document
       "septiembre", "octubre", "noviembre", "diciembre"
     ];
 
-    list.innerHTML = data.map(client => {
+    list.innerHTML = [...data].sort((a, b) => a.days_until - b.days_until).map(client => {
 
       const parts = client.next_birthday.split("-");
       const month = months[Number(parts[1]) - 1];
