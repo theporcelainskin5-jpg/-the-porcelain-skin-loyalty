@@ -666,10 +666,24 @@ const date = new Date(dateOnly ? value + "T12:00:00" : value);
        RECOMPENSAS
        ========================================== */
 
-    function renderReward(serviceCount) {
+   function renderReward(serviceCount, reward5Redeemed) {
       const count = Number(serviceCount) || 0;
 
       if (count >= 10) {
+        if (reward5Redeemed) {
+  reward.innerHTML = `
+    <div class="reward-icon">✦</div>
+
+    <div class="reward-title">
+      Recompensa del 10% canjeada
+    </div>
+
+    <div class="reward-text">
+      Sigue acumulando sellos para desbloquear tu recompensa final.
+    </div>
+  `;
+  return;
+}
         reward.innerHTML = `
           <div class="reward-icon">✦</div>
 
@@ -801,7 +815,7 @@ const date = new Date(dateOnly ? value + "T12:00:00" : value);
           : "";
 
       renderStamps(count);
-      renderReward(count);
+      renderReward(count, data.reward_5_redeemed);
       renderHistory(data.service_history);
 
       loading.classList.add("hidden");
