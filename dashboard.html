@@ -823,6 +823,42 @@ document.getElementById("saveServiceButton").disabled = true;
     serviceDate.disabled = !enabled;
     saveButton.disabled = !enabled;
   });
+document
+  .getElementById("removeLastServiceButton")
+  .addEventListener("click", async () => {
+    const cardId = document.getElementById("serviceClient").value;
+    const message = document.getElementById("serviceMessage");
+
+    if (!cardId) {
+      message.textContent = "Selecciona una clienta primero.";
+      return;
+    }
+
+    const confirmed = confirm(
+      "¿Seguro que quieres eliminar el último servicio registrado de esta tarjeta?"
+    );
+
+    if (!confirmed) return;
+
+    const { data, error } = await supabaseClient.rpc(
+      "admin_remove_last_service",
+      {
+        p_card_id: Number(cardId)
+      }
+    );
+
+    if (error) {
+      console.error(error);
+      message.textContent = "No se pudo corregir el último servicio.";
+      return;
+    }
+
+    message.textContent = "✓ Último servicio eliminado correctamente.";
+
+    await loadClients();
+    await loadServiceClients();
+  });
+    
     document
   .getElementById("birthdayButton")
   .addEventListener("click", async () => {
