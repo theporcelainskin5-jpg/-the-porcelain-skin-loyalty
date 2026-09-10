@@ -858,8 +858,8 @@ document
     await loadClients();
     await loadServiceClients();
     const serviceClient = document.getElementById("serviceClient");
-serviceClient.value = cardId;
-  });
+serviceClient.value = String(cardId);
+serviceClient.dispatchEvent(new Event("change"));
     
     document
   .getElementById("birthdayButton")
