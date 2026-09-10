@@ -166,7 +166,23 @@
       <button id="loginButton" type="submit">
         Iniciar sesión
       </button>
-
+<div style="text-align:center; margin-top:14px;">
+  <button
+    type="button"
+    id="forgotPasswordButton"
+    style="
+      background:none;
+      border:none;
+      color:#846e5d;
+      padding:0;
+      font-size:14px;
+      text-decoration:underline;
+      cursor:pointer;
+    "
+  >
+    ¿Olvidaste tu contraseña?
+  </button>
+</div>
       <div id="message"></div>
 
     </form>
@@ -192,7 +208,8 @@
     const loginForm = document.getElementById("loginForm");
     const loginButton = document.getElementById("loginButton");
     const message = document.getElementById("message");
-
+const forgotPasswordButton =
+  document.getElementById("forgotPasswordButton");
     loginForm.addEventListener("submit", async (event) => {
       event.preventDefault();
 
@@ -231,6 +248,39 @@
         }, 700);
       }
     });
+    forgotPasswordButton.addEventListener("click", async () => {
+  const email = document.getElementById("email").value.trim();
+
+  if (!email) {
+    message.textContent = "Escribe primero tu correo electrónico.";
+    message.className = "error";
+    return;
+  }
+
+  forgotPasswordButton.disabled = true;
+  forgotPasswordButton.textContent = "Enviando...";
+
+  const { error } = await supabaseClient.auth.resetPasswordForEmail(
+    email,
+    {
+      redirectTo: "https://the-porcelain-skin-loyalty.vercel.app/reset-password.html"
+    }
+  );
+
+  forgotPasswordButton.disabled = false;
+  forgotPasswordButton.textContent = "¿Olvidaste tu contraseña?";
+
+  if (error) {
+    console.error(error);
+    message.textContent = "No se pudo enviar el correo de recuperación.";
+    message.className = "error";
+    return;
+  }
+
+  message.textContent =
+    "✓ Revisa tu correo. Te enviamos un enlace para cambiar tu contraseña.";
+  message.className = "success";
+});
   </script>
 
 </body>
