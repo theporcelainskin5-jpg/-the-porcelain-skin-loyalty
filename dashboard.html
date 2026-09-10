@@ -441,8 +441,9 @@ document
       list.innerHTML = "Todavía no tienes clientas.";
       return;
     }
-
-    list.innerHTML = data.map(client => {
+const activeCards = data.filter(client => !client.archived);
+const archivedCards = data.filter(client => client.archived);
+    list.innerHTML = activeCards.map(client => {
 
       const cardNumber =
         String(client.card_number).padStart(3, "0");
@@ -525,6 +526,85 @@ ${isCompleted ? `
         </div>
       `;
     }).join("");
+    if (archivedCards.length > 0) {
+  list.innerHTML += `
+    <details style="
+      margin-top:20px;
+      border-top:1px solid #dfd2c8;
+      padding-top:18px;
+    ">
+      <summary style="
+        cursor:pointer;
+        font-family:Georgia,serif;
+        font-size:18px;
+        color:#4f4038;
+        padding:10px 0;
+      ">
+        Tarjetas archivadas (${archivedCards.length})
+      </summary>
+
+      <div style="margin-top:12px;">
+        ${archivedCards.map(client => {
+          const cardNumber =
+            String(client.card_number).padStart(3, "0");
+
+          const cardLink =
+            window.location.origin +
+            "/?token=" +
+            encodeURIComponent(client.share_token);
+
+          return `
+            <div style="
+              background:#f5eee8;
+              border:1px solid #dfd2c8;
+              border-radius:14px;
+              padding:16px;
+              margin-bottom:12px;
+            ">
+              <strong style="
+                font-family:Georgia,serif;
+                font-size:18px;
+              ">
+                ${escapeAdminHTML(client.client_name)}
+              </strong>
+
+              <div style="
+                margin-top:7px;
+                font-size:13px;
+                color:#806e64;
+              ">
+                Tarjeta N° ${cardNumber}
+                · ${client.services_count} de 10 servicios
+                <br>
+                <strong>ARCHIVADA</strong>
+              </div>
+
+              <div style="
+                display:grid;
+                grid-template-columns:1fr 1fr;
+                gap:8px;
+                margin-top:14px;
+              ">
+                <button
+                  type="button"
+                  onclick="window.open('${cardLink}', '_blank')">
+                  Ver tarjeta
+                </button>
+
+                <button
+                  type="button"
+                  class="secondary"
+                  onclick="copyClientLink('${cardLink}', this)">
+                  Copiar enlace
+                </button>
+              </div>
+            </div>
+          `;
+        }).join("")}
+      </div>
+    </details>
+  `;
+}
   });
 
 
@@ -587,7 +667,7 @@ async function copyClientLink(link, button) {
 
     select.innerHTML =
       '<option value="">Selecciona una clienta</option>' +
-      data.map(client => {
+      data.filter(client => !client.archived).map(client => {
         return `
           <option value="${client.card_id}">
             ${escapeAdminHTML(client.client_name)}
