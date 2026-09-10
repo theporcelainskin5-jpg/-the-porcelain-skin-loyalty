@@ -796,7 +796,8 @@ document
     if (clientsList) {
       clientsList.style.display = "none";
     }
-  await loadClients();  
+  await loadClients(); 
+  await loadServiceClients();
   });document
   .getElementById("birthdayButton")
   .addEventListener("click", async () => {
