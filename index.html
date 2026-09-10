@@ -666,36 +666,39 @@ const date = new Date(dateOnly ? value + "T12:00:00" : value);
        RECOMPENSAS
        ========================================== */
 
-   function renderReward(serviceCount, reward5Redeemed) {
+   function renderReward(serviceCount, reward5Redeemed, reward10Redeemed) {
       const count = Number(serviceCount) || 0;
 
       if (count >= 10) {
-        if (reward5Redeemed) {
+  if (reward10Redeemed) {
+    reward.innerHTML = `
+      <div class="reward-icon">✦</div>
+
+      <div class="reward-title">
+        Recompensa del 50% canjeada
+      </div>
+
+      <div class="reward-text">
+        ¡Gracias por completar tu tarjeta! ✨
+      </div>
+    `;
+    return;
+  }
+
   reward.innerHTML = `
     <div class="reward-icon">✦</div>
 
     <div class="reward-title">
-      Recompensa del 10% canjeada
+      ¡Felicidades! ✨ Has alcanzado tu recompensa
     </div>
 
     <div class="reward-text">
-      Sigue acumulando sellos para desbloquear tu recompensa final.
+      Disfruta de <strong>50% de descuento en tu próximo servicio.</strong>
     </div>
   `;
+
   return;
 }
-        reward.innerHTML = `
-          <div class="reward-icon">✦</div>
-
-          <div class="reward-title">
-          ¡Felicidades! ✨ Has alcanzado tu recompensa: 50% de descuento en tu próximo servicio.
-          </div>
-
-        
-        `;
-
-        return;
-      }
 
       if (count >= 5) {
         reward.innerHTML = `
@@ -815,7 +818,7 @@ const date = new Date(dateOnly ? value + "T12:00:00" : value);
           : "";
 
       renderStamps(count);
-      renderReward(count, data.reward_5_redeemed);
+      renderReward(count, data.reward_5_redeemed, data.reward_10_redeemed);
       renderHistory(data.service_history);
 
       loading.classList.add("hidden");
