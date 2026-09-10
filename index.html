@@ -550,7 +550,7 @@
       cursor:pointer;
     "
   >
-    ✦ Guardar mi tarjeta en iPhone
+    ✦ Guardar mi tarjeta en mi teléfono
   </button>
 
   <div
@@ -568,12 +568,7 @@
       text-align:left;
     "
   >
-    <strong>Guarda tu tarjeta en tu iPhone ✨</strong><br><br>
-    1. Toca el botón Compartir ↑ en Safari.<br>
-    2. Selecciona “Add to Home Screen”.<br>
-    3. Deja activado “Open as Web App”.<br>
-    4. Toca “Add”.<br><br>
-    Así tendrás tu tarjeta de The Porcelain Skin siempre a mano.
+   
   </div>
 </div>
         <footer class="footer">
@@ -598,11 +593,37 @@
     function showSaveInstructions() {
   const instructions = document.getElementById("saveInstructions");
 
-  if (instructions.style.display === "none" || !instructions.style.display) {
-    instructions.style.display = "block";
-  } else {
+  if (instructions.style.display === "block") {
     instructions.style.display = "none";
+    return;
   }
+
+  const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+  const isAndroid = /android/i.test(userAgent);
+
+  if (isAndroid) {
+    instructions.innerHTML = `
+      <strong>Guarda tu tarjeta en Android ✨</strong><br><br>
+      1. Abre esta tarjeta en Google Chrome.<br>
+      2. Toca los tres puntos del menú de Chrome.<br>
+      3. Selecciona “Agregar a pantalla principal” o “Instalar aplicación”.<br>
+      4. Confirma para agregarla.<br><br>
+      Así tendrás tu tarjeta de The Porcelain Skin siempre a mano.
+    `;
+  } else {
+    instructions.innerHTML = `
+      <strong>Guarda tu tarjeta en iPhone ✨</strong><br><br>
+      1. Abre esta tarjeta en Safari.<br>
+      2. Toca Compartir ↑.<br>
+      3. Selecciona “Add to Home Screen”.<br>
+      4. Deja activado “Open as Web App”.<br>
+      5. Toca “Add”.<br><br>
+      Así tendrás tu tarjeta de The Porcelain Skin siempre a mano.
+    `;
+  }
+
+  instructions.style.display = "block";
+}
 }
     /* ==========================================
        THE PORCELAIN SKIN
