@@ -232,12 +232,22 @@ const forgotPasswordButton =
       loginButton.textContent = "Iniciar sesión";
 
       if (error) {
-        console.error(error);
-        message.textContent =
-          "No se pudo iniciar sesión. Revisa el correo y la contraseña.";
-        message.className = "error";
-        return;
-      }
+  console.error(error);
+
+  if (
+    error.message &&
+    error.message.toLowerCase().includes("email rate limit")
+  ) {
+    message.textContent =
+      "Has solicitado varios enlaces recientemente. Espera unos minutos e inténtalo nuevamente.";
+  } else {
+    message.textContent =
+      "No se pudo enviar el correo de recuperación. Inténtalo nuevamente.";
+  }
+
+  message.className = "error";
+  return;
+}
 
       if (data.user) {
         message.textContent = "✓ Acceso correcto";
