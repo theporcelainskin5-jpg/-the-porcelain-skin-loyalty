@@ -701,21 +701,35 @@ const date = new Date(dateOnly ? value + "T12:00:00" : value);
 }
 
       if (count >= 5) {
-        reward.innerHTML = `
-          <div class="reward-icon">✨</div>
+  if (reward5Redeemed) {
+    reward.innerHTML = `
+      <div class="reward-icon">✦</div>
 
-          <div class="reward-title">
-            ¡Primera recompensa desbloqueada!
-          </div>
+      <div class="reward-title">
+        Recompensa del 10% canjeada
+      </div>
 
-          <div class="reward-text">
-            Disfruta de
-            <strong>10% de descuento en tu próximo servicio.</strong>
-          </div>
-        `;
+      <div class="reward-text">
+        Sigue acumulando sellos para desbloquear tu recompensa final.
+      </div>
+    `;
+    return;
+  }
 
-        return;
-      }
+  reward.innerHTML = `
+    <div class="reward-icon">✨</div>
+
+    <div class="reward-title">
+      ¡Primera recompensa desbloqueada!
+    </div>
+
+    <div class="reward-text">
+      Disfruta de
+      <strong>10% de descuento en tu próximo servicio.</strong>
+    </div>
+  `;
+  return;
+}
 
       const remaining = 5 - count;
 
