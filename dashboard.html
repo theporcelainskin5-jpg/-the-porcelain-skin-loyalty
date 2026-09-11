@@ -506,6 +506,7 @@ const archivedCards = data.filter(client => client.archived);
 
     <button
       type="button"
+      id="archivedTabButton"
       class="secondary"
      onclick="showClientCards('archived')"
       style="flex:1;"
@@ -1028,6 +1029,7 @@ document
   data.filter(client => !client.archived);
 
 renderServiceClients(
+    });
   document.getElementById("serviceClientSearch").value
 );
 }   
