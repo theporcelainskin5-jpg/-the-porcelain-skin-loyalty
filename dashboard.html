@@ -653,7 +653,7 @@ ${tenRewardAvailable ? `
     }))).join("");
     if (archivedCards.length > 0) {
   list.innerHTML += `
-    <details style="
+    <details id="archivedCardsSection" style="
        margin-top:20px;
        display:none;
       border-top:1px solid #dfd2c8;
@@ -784,7 +784,7 @@ async function loadClients() {
 }
 function showClientCards(type) {
   const activeCards = document.querySelectorAll(".client-card");
-  const archivedSection = document.querySelector("#clientsList details");
+  const archivedSection = document.getElementById("archivedCardsSection");
 
   if (type === "archived") {
     activeCards.forEach(card => {
