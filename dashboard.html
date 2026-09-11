@@ -984,6 +984,33 @@ async function copyClientLink(link, button) {
     button.textContent = originalText;
   }, 1500);
 }
+   let serviceClientsCache = [];
+
+function renderServiceClients(search = "") {
+  const select = document.getElementById("serviceClient");
+
+  const term = search.trim().toLowerCase();
+
+  const filtered = serviceClientsCache.filter(client =>
+    client.client_name.toLowerCase().includes(term)
+  );
+
+  select.innerHTML =
+    '<option value="">Selecciona una clienta</option>' +
+    filtered.map(client => `
+      <option value="${client.card_id}">
+        ${escapeAdminHTML(client.client_name)}
+        — Tarjeta ${String(client.card_number).padStart(3, "0")}
+        (${client.services_count}/10)
+      </option>
+    `).join("");
+}
+
+document
+  .getElementById("serviceClientSearch")
+  .addEventListener("input", function () {
+    renderServiceClients(this.value);
+  }); 
  async function loadServiceClients() {
   const select = document.getElementById("serviceClient");
 
@@ -997,20 +1024,12 @@ async function copyClientLink(link, button) {
     return;
   }
 
-  select.innerHTML =
-    '<option value="">Selecciona una clienta</option>' +
-    data
-      .filter(client => !client.archived)
-      .map(client => {
-        return `
-          <option value="${client.card_id}">
-            ${escapeAdminHTML(client.client_name)}
-            — Tarjeta ${String(client.card_number).padStart(3, "0")}
-            (${client.services_count}/10)
-          </option>
-        `;
-      })
-      .join("");
+  serviceClientsCache =
+  data.filter(client => !client.archived);
+
+renderServiceClients(
+  document.getElementById("serviceClientSearch").value
+);
 }   
     document
   .getElementById("serviceButton")
@@ -1049,18 +1068,12 @@ async function copyClientLink(link, button) {
       return;
     }
 
-    select.innerHTML =
-      '<option value="">Selecciona una clienta</option>' +
-      data.filter(client => !client.archived).map(client => {
-        return `
-          <option value="${client.card_id}">
-            ${escapeAdminHTML(client.client_name)}
-            — Tarjeta ${String(client.card_number).padStart(3, "0")}
-            (${client.services_count}/10)
-          </option>
-        `;
-      }).join("");
-  });
+    serviceClientsCache =
+  data.filter(client => !client.archived);
+
+document.getElementById("serviceClientSearch").value = "";
+
+renderServiceClients();
 
 
 document
