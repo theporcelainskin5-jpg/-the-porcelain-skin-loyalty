@@ -649,6 +649,17 @@ const statusText =
             </button>
 
           </div>
+          <button
+  type="button"
+  class="secondary"
+  style="margin-top:10px;"
+  onclick='editClient(
+    ${client.client_id},
+    ${JSON.stringify(client.client_name)},
+    ${JSON.stringify(client.birthday || "")}
+  )'>
+  Editar datos
+</button>
  ${fiveRewardAvailable ? `
   <button
     type="button"
@@ -1023,7 +1034,51 @@ async function copyClientLink(link, button) {
     button.textContent = originalText;
   }, 1500);
 }
-   let serviceClientsCache = [];
+   async function editClient(clientId, currentName, currentBirthday) {
+  const newName = prompt(
+    "Nombre de la clienta:",
+    currentName
+  );
+
+  if (newName === null) return;
+
+  const cleanName = newName.trim();
+
+  if (!cleanName) {
+    alert("El nombre no puede quedar vacío.");
+    return;
+  }
+
+  const birthdayValue = currentBirthday
+    ? String(currentBirthday).slice(0, 10)
+    : "";
+
+  const newBirthday = prompt(
+    "Cumpleaños (AAAA-MM-DD):\nEjemplo: 1995-10-05\n\nDéjalo vacío si no deseas guardar cumpleaños.",
+    birthdayValue
+  );
+
+  if (newBirthday === null) return;
+
+  const { error } = await supabaseClient.rpc(
+    "admin_update_client",
+    {
+      p_client_id: Number(clientId),
+      p_client_name: cleanName,
+      p_birthday: newBirthday.trim() || null
+    }
+  );
+
+  if (error) {
+    console.error(error);
+    alert("No se pudieron actualizar los datos.");
+    return;
+  }
+
+  alert("✓ Datos de la clienta actualizados.");
+  await loadClients();
+}
+    let serviceClientsCache = [];
 
 function renderServiceClients(search = "") {
   const select = document.getElementById("serviceClient");
