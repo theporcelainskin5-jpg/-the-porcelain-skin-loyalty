@@ -784,12 +784,7 @@ async function loadClients() {
 }
 function showClientCards(type) {
   const activeCards = document.querySelectorAll(".client-card");
-  const archivedCards = document.querySelectorAll(".client-search-item");
-
-  const archivedSection =
-    archivedCards.length > 0
-      ? archivedCards[0].closest("details")
-      : null;
+  const archivedSection = document.querySelector("#clientsList details");
 
   if (type === "archived") {
     activeCards.forEach(card => {
