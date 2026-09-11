@@ -675,6 +675,21 @@ ${tenRewardAvailable ? `
                   Copiar enlace
                 </button>
               </div>
+              <button
+  type="button"
+  style="
+    margin-top:10px;
+    background:#fff;
+    color:#9b3d36;
+    border:1px solid #c99a95;
+  "
+  onclick='deleteArchivedCard(
+    ${client.card_id},
+    ${JSON.stringify(client.client_name)}
+  )'
+>
+  Eliminar definitivamente
+</button>
               ${!clientsWithActiveCard.has(client.client_id) ? `
   <button
     type="button"
@@ -709,6 +724,33 @@ function escapeAdminHTML(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+    async function deleteArchivedCard(cardId, clientName) {
+  const confirmed = confirm(
+    `¿Eliminar definitivamente la tarjeta archivada de ${clientName}?\n\n` +
+    `Se eliminará también su historial de servicios de esta tarjeta.\n\n` +
+    `Esta acción no se puede deshacer.`
+  );
+
+  if (!confirmed) return;
+
+  try {
+    const { error } = await supabaseClient.rpc(
+      "admin_delete_archived_card",
+      {
+        p_card_id: Number(cardId)
+      }
+    );
+
+    if (error) throw error;
+
+    alert("✓ Tarjeta archivada eliminada definitivamente.");
+    await loadClients();
+
+  } catch (error) {
+    console.error(error);
+    alert("No se pudo eliminar la tarjeta archivada.");
+  }
 }
 async function redeemFiveReward(cardId, button) {
   const confirmed = confirm(
