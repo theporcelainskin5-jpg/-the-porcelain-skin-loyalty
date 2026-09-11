@@ -481,13 +481,14 @@ const archivedCards = data.filter(client => client.archived);
     gap:8px;
     margin-bottom:18px;
   ">
-    <button
-      type="button"
-      onclick="showClientCards('archived')"
-      style="flex:1;"
-    >
-      ACTIVAS (${activeCards.length})
-    </button>
+   <button
+  type="button"
+  id="activeTabButton"
+  onclick="showClientCards('active')"
+  style="flex:1;"
+>
+  ACTIVAS (${activeCards.length})
+</button>
 
     <button
       type="button"
@@ -769,26 +770,42 @@ async function loadClients() {
   list.style.display = "none";
   document.getElementById("clientsButton").click();
 }
-    function filterClients() {
+    let currentClientTab = "active";
+
+function filterClients() {
   const searchInput = document.getElementById("clientSearch");
   if (!searchInput) return;
 
   const search = searchInput.value.trim().toLowerCase();
 
-  document.querySelectorAll(".client-search-item, .client-card").forEach(card => {
-    const name = (card.dataset.clientName || "").toLowerCase();
+  const cards =
+    currentClientTab === "archived"
+      ? document.querySelectorAll(".archived-card")
+      : document.querySelectorAll(".client-card");
+
+  cards.forEach(card => {
+    const name =
+      (card.dataset.clientName || "").toLowerCase();
 
     card.style.display =
       name.includes(search) ? "" : "none";
   });
 }
+
 function showClientCards(type) {
+  currentClientTab = type;
+
   const activeCards =
-    const activeCards =
-  document.querySelectorAll("#clientsList > .client-card");
+    document.querySelectorAll(".client-card");
 
   const archivedSection =
     document.getElementById("archivedCardsSection");
+
+  const activeButton =
+    document.getElementById("activeTabButton");
+
+  const archivedButton =
+    document.getElementById("archivedTabButton");
 
   if (type === "archived") {
     activeCards.forEach(card => {
@@ -799,6 +816,15 @@ function showClientCards(type) {
       archivedSection.style.display = "block";
       archivedSection.open = true;
     }
+
+    if (activeButton) {
+      activeButton.classList.add("secondary");
+    }
+
+    if (archivedButton) {
+      archivedButton.classList.remove("secondary");
+    }
+
   } else {
     activeCards.forEach(card => {
       card.style.display = "";
@@ -808,7 +834,17 @@ function showClientCards(type) {
       archivedSection.style.display = "none";
       archivedSection.open = false;
     }
+
+    if (activeButton) {
+      activeButton.classList.remove("secondary");
+    }
+
+    if (archivedButton) {
+      archivedButton.classList.add("secondary");
+    }
   }
+
+  filterClients();
 }
     function escapeAdminHTML(value) {
   return String(value ?? "")
