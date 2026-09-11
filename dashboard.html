@@ -454,7 +454,28 @@ const archivedCards = data.filter(client => client.archived);
     const clientsWithActiveCard = new Set(
   activeCards.map(card => card.client_id)
 );
-    list.innerHTML = (await Promise.all(activeCards.map(async client => {
+    const searchHTML = `
+  <div style="margin-bottom:18px;">
+    <input
+      type="text"
+      id="clientSearch"
+      placeholder="Buscar clienta..."
+      oninput="filterClients()"
+      style="
+        width:100%;
+        box-sizing:border-box;
+        padding:13px 16px;
+        border:1px solid #d8c8bc;
+        border-radius:12px;
+        background:#fff;
+        color:#5e493e;
+        font-size:14px;
+        outline:none;
+      "
+    >
+  </div>
+`;
+    list.innerHTML = searchHTML + (await Promise.all(activeCards.map(async client => {
 
       const cardNumber =
         String(client.card_number).padStart(3, "0");
@@ -498,7 +519,7 @@ const statusText =
         encodeURIComponent(client.share_token);
 
       return `
-        <div style="
+        <div class="client-card" style="
           background:#f5eee8;
           border:1px solid #dfd2c8;
           border-radius:14px;
@@ -631,7 +652,10 @@ ${tenRewardAvailable ? `
             encodeURIComponent(client.share_token);
 
           return `
-            <div style="
+            <div
+  class="client-search-item archived-card"
+  data-client-name="${escapeAdminHTML(client.client_name.toLowerCase())}"
+  style="
               background:#f5eee8;
               border:1px solid #dfd2c8;
               border-radius:14px;
