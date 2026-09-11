@@ -784,7 +784,7 @@ async function loadClients() {
 }
 function showClientCards(type) {
   const activeCards = document.querySelectorAll(".client-card");
-  const archivedCards = document.querySelectorAll(".archived-card");
+  const archivedCards = document.querySelectorAll(".client-search-item");
 
   const archivedSection =
     archivedCards.length > 0
@@ -807,6 +807,7 @@ function showClientCards(type) {
 
     if (archivedSection) {
       archivedSection.style.display = "none";
+      archivedSection.open = false;
     }
   }
 
