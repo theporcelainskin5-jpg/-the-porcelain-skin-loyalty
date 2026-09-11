@@ -260,6 +260,17 @@
     font-size:16px;
   "
 >
+   <div
+  id="serviceClientResults"
+  style="
+    display:none;
+    margin:-2px 0 12px;
+    border:1px solid #d9ccc2;
+    border-radius:12px;
+    background:white;
+    overflow:hidden;
+  "
+></div>         
   <select
     id="serviceClient"
     style="width:100%; padding:14px; margin:7px 0 15px; border:1px solid #d9ccc2; border-radius:12px; font-size:16px; background:white;">
@@ -1006,12 +1017,73 @@ function renderServiceClients(search = "") {
       </option>
     `).join("");
 }
+function renderServiceClientResults(search = "") {
+  const results = document.getElementById("serviceClientResults");
+  const term = search.trim().toLowerCase();
 
+  if (!term) {
+    results.style.display = "none";
+    results.innerHTML = "";
+    return;
+  }
+
+  const filtered = serviceClientsCache.filter(client =>
+    client.client_name.toLowerCase().includes(term)
+  );
+
+  if (filtered.length === 0) {
+    results.style.display = "block";
+    results.innerHTML = `
+      <div style="padding:13px; color:#927d70; font-size:14px;">
+        No se encontraron clientas.
+      </div>
+    `;
+    return;
+  }
+
+  results.style.display = "block";
+
+  results.innerHTML = filtered.map(client => `
+    <button
+      type="button"
+      class="service-client-result"
+      data-card-id="${client.card_id}"
+      data-client-name="${escapeAdminHTML(client.client_name)}"
+      style="
+        background:white;
+        color:#5e493e;
+        border-radius:0;
+        border-bottom:1px solid #eee3db;
+        text-align:left;
+        padding:13px 15px;
+      "
+    >
+      ${escapeAdminHTML(client.client_name)}
+      — Tarjeta ${String(client.card_number).padStart(3, "0")}
+      (${client.services_count}/10)
+    </button>
+  `).join("");
+
+  results.querySelectorAll(".service-client-result").forEach(button => {
+    button.addEventListener("click", () => {
+      const select = document.getElementById("serviceClient");
+      const searchInput = document.getElementById("serviceClientSearch");
+
+      select.value = button.dataset.cardId;
+      searchInput.value = button.dataset.clientName;
+
+      results.style.display = "none";
+
+      select.dispatchEvent(new Event("change"));
+    });
+  });
+}
 document
   .getElementById("serviceClientSearch")
   .addEventListener("input", function () {
     renderServiceClients(this.value);
-  }); 
+    renderServiceClientResults(this.value);
+  });
  async function loadServiceClients() {
   const select = document.getElementById("serviceClient");
 
