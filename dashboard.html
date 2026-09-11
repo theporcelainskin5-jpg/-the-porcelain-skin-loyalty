@@ -483,7 +483,7 @@ const archivedCards = data.filter(client => client.archived);
   ">
     <button
       type="button"
-      onclick="showClientCards('active')"
+      onclick="showClientCards('archived')"
       style="flex:1;"
     >
       ACTIVAS (${activeCards.length})
@@ -783,7 +783,8 @@ async function loadClients() {
   });
 }
 function showClientCards(type) {
-  const activeCards = document.querySelectorAll(".client-card");
+  const activeCards = document.querySelectorAll(".client-card:not(.archived-card)");
+  const archivedCards = document.querySelectorAll(".archived-card");
   const archivedSection = document.getElementById("archivedCardsSection");
 
   if (type === "archived") {
