@@ -519,7 +519,10 @@ const statusText =
         encodeURIComponent(client.share_token);
 
       return `
-        <div class="client-card" style="
+        <div
+  class="client-card"
+  data-client-name="${escapeAdminHTML(client.client_name)}"
+  style="
           background:#f5eee8;
           border:1px solid #dfd2c8;
           border-radius:14px;
@@ -747,7 +750,7 @@ async function loadClients() {
 
   const search = searchInput.value.trim().toLowerCase();
 
-  document.querySelectorAll(".client-search-item").forEach(card => {
+  document.querySelectorAll(".client-search-item, .client-card").forEach(card => {
     const name = (card.dataset.clientName || "").toLowerCase();
 
     card.style.display =
