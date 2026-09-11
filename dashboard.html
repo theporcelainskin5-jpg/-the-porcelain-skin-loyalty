@@ -1421,14 +1421,51 @@ document
       const day = Number(parts[2]);
 
       let remaining;
+let birthdayBadge = "";
 
-      if (client.days_until === 0) {
-        remaining = "🎉 ¡Cumpleaños hoy!";
-      } else if (client.days_until === 1) {
-        remaining = "Falta 1 día";
-      } else {
-        remaining = `Faltan ${client.days_until} días`;
-      }
+if (client.days_until === 0) {
+  remaining = "🎉 ¡Cumpleaños hoy!";
+  birthdayBadge = `
+    <div style="
+      margin-top:10px;
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:20px;
+      background:#73594b;
+      color:white;
+      font-size:12px;
+      font-weight:bold;
+    ">
+      🎂 HOY
+    </div>
+  `;
+} else if (client.days_until === 1) {
+  remaining = "Falta 1 día";
+  birthdayBadge = `
+    <div style="
+      margin-top:10px;
+      color:#73594b;
+      font-size:12px;
+      font-weight:bold;
+    ">
+      ✦ ESTA SEMANA
+    </div>
+  `;
+} else if (client.days_until <= 7) {
+  remaining = `Faltan ${client.days_until} días`;
+  birthdayBadge = `
+    <div style="
+      margin-top:10px;
+      color:#73594b;
+      font-size:12px;
+      font-weight:bold;
+    ">
+      ✦ ESTA SEMANA
+    </div>
+  `;
+} else {
+  remaining = `Faltan ${client.days_until} días`;
+}
 
       return `
         <div style="
@@ -1452,10 +1489,42 @@ document
           ">
             ${day} de ${month} · ${remaining}
           </div>
+          ${birthdayBadge}
+          <button
+  type="button"
+  class="secondary"
+  style="margin-top:12px;"
+  onclick='shareBirthdayMessage(${JSON.stringify(client.client_name)})'
+>
+  ✦ Preparar felicitación
+</button>
         </div>
       `;
     }).join("");
   });
+    async function shareBirthdayMessage(clientName) {
+  const message =
+    `¡Feliz cumpleaños, ${clientName}! 🎂✨\n\n` +
+    `Espero que tengas un día hermoso y lleno de cosas bonitas. ` +
+    `Gracias por confiar en The Porcelain Skin. ✦\n\n` +
+    `Con cariño,\nThe Porcelain Skin`;
+
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: "Feliz cumpleaños ✨",
+        text: message
+      });
+    } catch (error) {
+      if (error.name !== "AbortError") {
+        console.error(error);
+      }
+    }
+  } else {
+    await navigator.clipboard.writeText(message);
+    alert("✓ Felicitación copiada.");
+  }
+}
     async function startNewCard(clientId, oldCardId, clientName) {
 
   const confirmed = confirm(
