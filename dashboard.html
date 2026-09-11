@@ -475,7 +475,31 @@ const archivedCards = data.filter(client => client.archived);
     >
   </div>
 `;
-    list.innerHTML = searchHTML + (await Promise.all(activeCards.map(async client => {
+    const tabsHTML = `
+  <div style="
+    display:flex;
+    gap:8px;
+    margin-bottom:18px;
+  ">
+    <button
+      type="button"
+      onclick="showClientCards('active')"
+      style="flex:1;"
+    >
+      ACTIVAS (${activeCards.length})
+    </button>
+
+    <button
+      type="button"
+      class="secondary"
+      onclick="showClientCards('archived')"
+      style="flex:1;"
+    >
+      ARCHIVADAS (${archivedCards.length})
+    </button>
+  </div>
+`;
+    list.innerHTML = searchHTML + tabsHTML + (await Promise.all(activeCards.map(async client => {
 
       const cardNumber =
         String(client.card_number).padStart(3, "0");
@@ -630,7 +654,8 @@ ${tenRewardAvailable ? `
     if (archivedCards.length > 0) {
   list.innerHTML += `
     <details style="
-      margin-top:20px;
+       margin-top:20px;
+       display:none;
       border-top:1px solid #dfd2c8;
       padding-top:18px;
     ">
@@ -757,7 +782,37 @@ async function loadClients() {
       name.includes(search) ? "" : "none";
   });
 }
-function escapeAdminHTML(value) {
+function showClientCards(type) {
+  const activeCards = document.querySelectorAll(".client-card");
+  const archivedCards = document.querySelectorAll(".archived-card");
+
+  const archivedSection =
+    archivedCards.length > 0
+      ? archivedCards[0].closest("details")
+      : null;
+
+  if (type === "archived") {
+    activeCards.forEach(card => {
+      card.style.display = "none";
+    });
+
+    if (archivedSection) {
+      archivedSection.style.display = "block";
+      archivedSection.open = true;
+    }
+  } else {
+    activeCards.forEach(card => {
+      card.style.display = "";
+    });
+
+    if (archivedSection) {
+      archivedSection.style.display = "none";
+    }
+  }
+
+  filterClients();
+}
+    function escapeAdminHTML(value) {
   return String(value ?? "")
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
