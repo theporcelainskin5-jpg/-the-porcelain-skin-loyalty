@@ -430,10 +430,37 @@ message.innerHTML =
   "Tarjeta N° " +
   String(card.card_number).padStart(3, "0") +
   "<br><br>" +
-  '<button type="button" id="copyCardLinkButton">' +
-  "Copiar enlace de la tarjeta" +
-  "</button>";
+  '<div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">' +
+'<button type="button" id="viewNewCardButton">' +
+"Ver tarjeta" +
+"</button>" +
+'<button type="button" id="copyCardLinkButton" class="secondary">' +
+"Copiar enlace" +
+"</button>" +
+"</div>" +
+'<button type="button" id="shareNewCardButton" class="secondary" style="margin-top:8px;">' +
+"Compartir tarjeta" +
+"</button>";
+document
+  .getElementById("viewNewCardButton")
+  .addEventListener("click", () => {
+    window.open(cardLink, "_blank");
+  });
+    document
+  .getElementById("shareNewCardButton")
+  .addEventListener("click", async () => {
 
+    if (navigator.share) {
+      await navigator.share({
+        title: "The Porcelain Skin",
+        text: "✨ Aquí tienes tu tarjeta de fidelidad de The Porcelain Skin.",
+        url: cardLink
+      });
+    } else {
+      await navigator.clipboard.writeText(cardLink);
+      alert("✓ Enlace de la tarjeta copiado.");
+    }
+  });
 document
   .getElementById("copyCardLinkButton")
   .addEventListener("click", async () => {
