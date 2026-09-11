@@ -741,6 +741,19 @@ async function loadClients() {
   list.style.display = "none";
   document.getElementById("clientsButton").click();
 }
+    function filterClients() {
+  const searchInput = document.getElementById("clientSearch");
+  if (!searchInput) return;
+
+  const search = searchInput.value.trim().toLowerCase();
+
+  document.querySelectorAll(".client-search-item").forEach(card => {
+    const name = (card.dataset.clientName || "").toLowerCase();
+
+    card.style.display =
+      name.includes(search) ? "" : "none";
+  });
+}
 function escapeAdminHTML(value) {
   return String(value ?? "")
     .replaceAll("&", "&amp;")
