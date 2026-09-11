@@ -783,9 +783,11 @@ async function loadClients() {
   });
 }
 function showClientCards(type) {
-  const activeCards = document.querySelectorAll(".client-card:not(.archived-card)");
-  const archivedCards = document.querySelectorAll(".archived-card");
-  const archivedSection = document.getElementById("archivedCardsSection");
+  const activeCards =
+    document.querySelectorAll(".client-card:not(.archived-card)");
+
+  const archivedSection =
+    document.getElementById("archivedCardsSection");
 
   if (type === "archived") {
     activeCards.forEach(card => {
@@ -806,8 +808,6 @@ function showClientCards(type) {
       archivedSection.open = false;
     }
   }
-
-  filterClients();
 }
     function escapeAdminHTML(value) {
   return String(value ?? "")
