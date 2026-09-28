@@ -322,6 +322,22 @@
           </button><div id="birthdayList" style="display:none; margin-top:20px;"></div>
         </div>
 
+        <div class="card">
+  <div class="icon">✦</div>
+  <h3>Gift Cards</h3>
+  <p>
+    Crea, consulta y administra las tarjetas de regalo.
+  </p>
+  <button class="secondary" id="giftCardsButton">
+    Administrar Gift Cards
+  </button>
+
+  <div
+    id="giftCardsPanel"
+    style="display:none; margin-top:20px;">
+  </div>
+</div>
+
       </section>
 
       <div class="footer">
@@ -366,6 +382,31 @@
 
         window.location.replace("admin.html");
       });
+document
+  .getElementById("giftCardsButton")
+  .addEventListener("click", () => {
+    const panel = document.getElementById("giftCardsPanel");
+
+    if (panel.style.display === "block") {
+      panel.style.display = "none";
+      return;
+    }
+
+    panel.style.display = "block";
+
+    panel.innerHTML = `
+      <div style="display:grid; gap:12px;">
+        <button type="button" id="createGiftCardButton">
+          Crear Gift Card
+        </button>
+
+        <button type="button" class="secondary" id="viewGiftCardsButton">
+          Ver Gift Cards
+        </button>
+      </div>
+    `;
+  });
+    
 document
   .getElementById("newClientButton")
   .addEventListener("click", () => {
