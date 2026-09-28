@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Gift Card | The Porcelain Skin</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #f4eee8;
+      color: #493a33;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 30px 16px;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 1000px;
+      text-align: center;
+    }
+
+    .brand {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 20px;
+      letter-spacing: 1px;
+      margin-bottom: 28px;
+    }
+
+    .gift-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .gift-wrapper img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 20px;
+      box-shadow: 0 18px 45px rgba(73, 58, 51, 0.14);
+    }
+
+    /*
+      Estos textos se colocan encima del modelo
+      original GIFT CARD NEW.png.
+    */
+
+    .gift-data {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .field {
+      position: absolute;
+      color: #5a443a;
+      text-align: left;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      font-family: Georgia, "Times New Roman", serif;
+    }
+
+    .recipient {
+      left: 22.5%;
+      top: 62.2%;
+      width: 42%;
+      font-size: clamp(10px, 2vw, 21px);
+    }
+
+    .sender {
+      left: 22.5%;
+      top: 70.2%;
+      width: 42%;
+      font-size: clamp(10px, 2vw, 21px);
+    }
+
+    .message {
+      left: 22.5%;
+      top: 78%;
+      width: 42%;
+      font-size: clamp(9px, 1.65vw, 18px);
+    }
+
+    .amount {
+      position: absolute;
+      right: 4.8%;
+      top: 46%;
+      width: 25%;
+      text-align: center;
+      color: #fff8ef;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(28px, 7vw, 72px);
+      line-height: 1;
+    }
+
+    .code {
+      position: absolute;
+      right: 5.7%;
+      top: 70.8%;
+      width: 23%;
+      text-align: center;
+      color: #6a5044;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(8px, 1.65vw, 17px);
+      letter-spacing: 1px;
+      white-space: nowrap;
+    }
+
+    .status {
+      margin: 26px auto 0;
+      font-size: 14px;
+      color: #806d63;
+    }
+
+    .error {
+      max-width: 650px;
+      margin: 0 auto;
+      padding: 30px;
+      background: #fffaf6;
+      border: 1px solid #dfd0c6;
+      border-radius: 20px;
+      line-height: 1.6;
+    }
+
+    .footer {
+      margin-top: 32px;
+      font-family: Georgia, "Times New Roman", serif;
+      color: #9a887d;
+      font-size: 16px;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 20px 10px;
+      }
+
+      .brand {
+        margin-bottom: 20px;
+        font-size: 17px;
+      }
+
+      .gift-wrapper img {
+        border-radius: 12px;
+      }
+
+      .footer {
+        margin-top: 24px;
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="page">
+
+    <div class="brand">
+      The Porcelain Skin
+    </div>
+
+    <div id="loading" class="status">
+      Cargando Gift Card...
+    </div>
+
+    <div id="giftCard" class="gift-wrapper" style="display:none;">
+
+      <img
+        src="GIFT CARD NEW.png.png"
+        alt="Gift Card The Porcelain Skin"
+      >
+
+      <div class="gift-data">
+
+        <div id="recipient" class="field recipient"></div>
+
+        <div id="sender" class="field sender"></div>
+
+        <div id="message" class="field message"></div>
+
+        <div id="amount" class="amount"></div>
+
+        <div id="code" class="code"></div>
+
+      </div>
+
+    </div>
+
+    <div id="errorBox" class="error" style="display:none;">
+      Esta Gift Card no está disponible o el enlace no es válido.
+    </div>
+
+    <div class="footer">
+      @theporcelainskin
+    </div>
+
+  </main>
+
+  <script>
+    const SUPABASE_URL =
+      "https://aedtqbpueeyvxoowttkn.supabase.co";
+
+    const SUPABASE_PUBLISHABLE_KEY =
+      "sb_publishable_Zl2a0N40GakZakvzUfcufg_yvcTIrI_";
+
+    /*
+      IMPORTANTE:
+      Sustituye las dos líneas anteriores por los valores EXACTOS
+      que aparecen en dashboard.html.
+    */
+
+    const supabaseClient = supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
+
+    function escapeHTML(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function formatAmount(value) {
+      const number = Number(value);
+
+      if (!Number.isFinite(number)) {
+        return "";
+      }
+
+      if (Number.isInteger(number)) {
+        return "$" + number;
+      }
+
+      return "$" + number.toFixed(2);
+    }
+
+    async function loadGiftCard() {
+
+      const params = new URLSearchParams(window.location.search);
+
+      const code =
+        params.get("code") ||
+        params.get("gift") ||
+        params.get("id");
+
+      const loading = document.getElementById("loading");
+      const giftCard = document.getElementById("giftCard");
+      const errorBox = document.getElementById("errorBox");
+
+      if (!code) {
+        loading.style.display = "none";
+        errorBox.style.display = "block";
+        return;
+      }
+
+      const { data, error } = await supabaseClient
+        .from("gift_cards")
+        .select(
+          "code, amount, balance, recipient_name, sender_name, message, status"
+        )
+        .eq("code", code)
+        .maybeSingle();
+
+      if (error || !data) {
+        console.error("Error cargando Gift Card:", error);
+
+        loading.style.display = "none";
+        errorBox.style.display = "block";
+        return;
+      }
+
+      document.getElementById("recipient").textContent =
+        data.recipient_name || "";
+
+      document.getElementById("sender").textContent =
+        data.sender_name || "";
+
+      document.getElementById("message").textContent =
+        data.message || "";
+
+      document.getElementById("amount").textContent =
+        formatAmount(data.amount);
+
+      document.getElementById("code").textContent =
+        data.code || "";
+
+      loading.style.display = "none";
+      giftCard.style.display = "block";
+    }
+
+    loadGiftCard();
+  </script>
+
+</body>
+</html>
