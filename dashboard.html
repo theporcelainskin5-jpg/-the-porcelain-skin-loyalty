@@ -406,7 +406,81 @@ document
       </div>
     `;
   });
-    
+    document.addEventListener("click", (event) => {
+  if (event.target.id !== "createGiftCardButton") return;
+
+  const panel = document.getElementById("giftCardsPanel");
+
+  panel.innerHTML = `
+    <div style="margin-top:5px;">
+
+      <h3 style="margin-bottom:18px;">
+        Crear Gift Card
+      </h3>
+
+      <label for="giftRecipient">Para</label>
+      <input
+        id="giftRecipient"
+        type="text"
+        placeholder="Nombre de quien recibe"
+        style="width:100%; padding:14px; margin:7px 0 15px; border:1px solid #d9ccc2; border-radius:12px; font-size:16px;"
+      >
+
+      <label for="giftSender">De</label>
+      <input
+        id="giftSender"
+        type="text"
+        placeholder="Nombre de quien regala"
+        style="width:100%; padding:14px; margin:7px 0 15px; border:1px solid #d9ccc2; border-radius:12px; font-size:16px;"
+      >
+
+      <label for="giftAmount">Monto</label>
+      <input
+        id="giftAmount"
+        type="number"
+        min="1"
+        step="1"
+        placeholder="Ej. 100"
+        style="width:100%; padding:14px; margin:7px 0 15px; border:1px solid #d9ccc2; border-radius:12px; font-size:16px;"
+      >
+
+      <label for="giftMessage">Mensaje personal</label>
+      <textarea
+        id="giftMessage"
+        placeholder="Escribe el mensaje que aparecerá en la Gift Card"
+        rows="4"
+        style="width:100%; padding:14px; margin:7px 0 15px; border:1px solid #d9ccc2; border-radius:12px; font-size:16px; resize:vertical;"
+      ></textarea>
+
+      <label for="giftDeliveryDate">Fecha de envío</label>
+      <input
+        id="giftDeliveryDate"
+        type="date"
+        style="width:100%; padding:14px; margin:7px 0 18px; border:1px solid #d9ccc2; border-radius:12px; font-size:16px;"
+      >
+
+      <button
+        id="saveGiftCardButton"
+        type="button">
+        Crear Gift Card
+      </button>
+
+      <button
+        id="cancelGiftCardButton"
+        type="button"
+        class="secondary"
+        style="margin-top:10px;">
+        Volver
+      </button>
+
+      <div
+        id="giftCardMessage"
+        style="margin-top:14px; font-size:14px; line-height:1.5;">
+      </div>
+
+    </div>
+  `;
+});
 document
   .getElementById("newClientButton")
   .addEventListener("click", () => {
