@@ -626,6 +626,122 @@ document.addEventListener("click", async (event) => {
         "✓ Enlace copiado";
     });
 });
+
+    document.addEventListener("click", async (event) => {
+  if (event.target.id !== "viewGiftCardsButton") return;
+
+  const panel = document.getElementById("giftCardsPanel");
+
+  panel.innerHTML = "Cargando Gift Cards...";
+
+  const { data, error } =
+    await supabaseClient
+      .from("gift_cards")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error(error);
+    panel.innerHTML =
+      "No se pudieron cargar las Gift Cards.";
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    panel.innerHTML =
+      "Todavía no tienes Gift Cards.";
+    return;
+  }
+
+  panel.innerHTML =
+    '<button type="button" id="newGiftCardFromListButton" style="margin-bottom:18px;">' +
+      "＋ Crear nueva Gift Card" +
+    "</button>" +
+
+    data.map(gift => {
+
+      const giftCardLink =
+        window.location.origin +
+        "/gift-card.html?token=" +
+        encodeURIComponent(gift.share_token);
+
+      const amount =
+        Number(gift.amount || 0).toFixed(2);
+
+      const balance =
+        Number(gift.balance || 0).toFixed(2);
+
+      return `
+        <div style="
+          background:#f5eee8;
+          border:1px solid #dfd2c8;
+          border-radius:14px;
+          padding:16px;
+          margin-bottom:12px;
+        ">
+
+          <strong style="
+            font-family:Georgia,serif;
+            font-size:18px;
+          ">
+            ${escapeAdminHTML(gift.recipient_name)}
+          </strong>
+
+          <div style="
+            margin-top:7px;
+            color:#806e64;
+            font-size:13px;
+            line-height:1.6;
+          ">
+            Código: ${escapeAdminHTML(gift.code)}
+            <br>
+            Monto: $${amount}
+            <br>
+            Saldo: $${balance}
+            <br>
+            De: ${escapeAdminHTML(gift.sender_name)}
+          </div>
+
+          <div style="
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:8px;
+            margin-top:14px;
+          ">
+
+            <button
+              type="button"
+              onclick="window.open('${giftCardLink}', '_blank')">
+              Ver Gift Card
+            </button>
+
+            <button
+              type="button"
+              class="secondary"
+              onclick="copyClientLink('${giftCardLink}', this)">
+              Copiar enlace
+            </button>
+
+          </div>
+
+        </div>
+      `;
+    }).join("");
+});
+
+    document.addEventListener("click", (event) => {
+  if (event.target.id !== "newGiftCardFromListButton") return;
+
+  document.getElementById("giftCardsButton").click();
+
+  setTimeout(() => {
+    document.getElementById("giftCardsButton").click();
+
+    setTimeout(() => {
+      document.getElementById("createGiftCardButton")?.click();
+    }, 0);
+  }, 0);
+});
     
 document
   .getElementById("newClientButton")
