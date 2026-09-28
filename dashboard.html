@@ -451,7 +451,23 @@ document
         rows="4"
         style="width:100%; padding:14px; margin:7px 0 15px; border:1px solid #d9ccc2; border-radius:12px; font-size:16px; resize:vertical;"
       ></textarea>
+<label for="giftDeliveryMethod">¿Cómo quieres recibirla?</label>
+<select
+  id="giftDeliveryMethod"
+  style="width:100%; padding:14px; margin:7px 0 15px; border:1px solid #d9ccc2; border-radius:12px; font-size:16px; background:white;"
+>
+  <option value="">Selecciona una opción</option>
+  <option value="whatsapp">WhatsApp</option>
+  <option value="email">Email</option>
+</select>
 
+<label for="giftContact">WhatsApp o email para recibirla</label>
+<input
+  id="giftContact"
+  type="text"
+  placeholder="Número de WhatsApp o email"
+  style="width:100%; padding:14px; margin:7px 0 15px; border:1px solid #d9ccc2; border-radius:12px; font-size:16px;"
+>
       <label for="giftDeliveryDate">Fecha de envío</label>
       <input
         id="giftDeliveryDate"
@@ -481,6 +497,136 @@ document
     </div>
   `;
 });
+
+document.addEventListener("click", async (event) => {
+  if (event.target.id !== "saveGiftCardButton") return;
+
+  const recipientName =
+    document.getElementById("giftRecipient").value.trim();
+
+  const senderName =
+    document.getElementById("giftSender").value.trim();
+
+  const amount =
+    Number(document.getElementById("giftAmount").value);
+
+  const personalMessage =
+    document.getElementById("giftMessage").value.trim();
+
+  const deliveryMethod =
+    document.getElementById("giftDeliveryMethod").value;
+
+  const contact =
+    document.getElementById("giftContact").value.trim();
+
+  const deliveryDate =
+    document.getElementById("giftDeliveryDate").value || null;
+
+  const message =
+    document.getElementById("giftCardMessage");
+
+  const button =
+    document.getElementById("saveGiftCardButton");
+
+  message.textContent = "";
+
+  if (!recipientName) {
+    message.textContent = "Escribe el nombre de quien recibe.";
+    return;
+  }
+
+  if (!senderName) {
+    message.textContent = "Escribe el nombre de quien regala.";
+    return;
+  }
+
+  if (!amount || amount <= 0) {
+    message.textContent = "Escribe un monto válido.";
+    return;
+  }
+
+  if (!deliveryMethod) {
+    message.textContent = "Selecciona cómo se entregará la Gift Card.";
+    return;
+  }
+
+  if (!contact) {
+    message.textContent = "Escribe el WhatsApp o email para recibirla.";
+    return;
+  }
+
+  const recipientEmail =
+    deliveryMethod === "email" ? contact : null;
+
+  const recipientPhone =
+    deliveryMethod === "whatsapp" ? contact : null;
+
+  const code =
+    "TPS-GC-" +
+    Math.random()
+      .toString(36)
+      .substring(2, 6)
+      .toUpperCase();
+
+  button.disabled = true;
+  button.textContent = "Creando...";
+
+  const { data, error } =
+    await supabaseClient
+      .from("gift_cards")
+      .insert({
+        code: code,
+        amount: amount,
+        balance: amount,
+        recipient_name: recipientName,
+        sender_name: senderName,
+        recipient_email: recipientEmail,
+        recipient_phone: recipientPhone,
+        message: personalMessage || null,
+        delivery_method: deliveryMethod,
+        delivery_date: deliveryDate,
+        status: "active"
+      })
+      .select()
+      .single();
+
+  button.disabled = false;
+  button.textContent = "Crear Gift Card";
+
+  if (error) {
+    console.error(error);
+    message.textContent =
+      "No se pudo crear la Gift Card. Inténtalo nuevamente.";
+    return;
+  }
+
+  const giftCardLink =
+    window.location.origin +
+    "/gift-card.html?token=" +
+    encodeURIComponent(data.share_token);
+
+  message.innerHTML =
+    "✓ Gift Card creada correctamente.<br>" +
+    "Código: <strong>" +
+    escapeAdminHTML(data.code) +
+    "</strong><br>" +
+    "Monto: <strong>$" +
+    Number(data.amount).toFixed(2) +
+    "</strong><br><br>" +
+    '<button type="button" id="copyGiftCardLinkButton" class="secondary">' +
+    "Copiar enlace" +
+    "</button>";
+
+  document
+    .getElementById("copyGiftCardLinkButton")
+    .addEventListener("click", async () => {
+      await navigator.clipboard.writeText(giftCardLink);
+
+      document.getElementById("copyGiftCardLinkButton").textContent =
+        "✓ Enlace copiado";
+    });
+});
+    
 document
   .getElementById("newClientButton")
   .addEventListener("click", () => {
