@@ -256,6 +256,7 @@
       const params = new URLSearchParams(window.location.search);
 
       const code =
+        params.get("token") ||
         params.get("code") ||
         params.get("gift") ||
         params.get("id");
@@ -275,7 +276,7 @@
         .select(
           "code, amount, balance, recipient_name, sender_name, message, status"
         )
-        .eq("code", code)
+        .eq("share_token", code)
         .maybeSingle();
 
       if (error || !data) {
