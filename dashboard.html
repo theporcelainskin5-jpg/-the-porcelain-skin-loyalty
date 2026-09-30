@@ -653,98 +653,151 @@ document.addEventListener("click", async (event) => {
     return;
   }
 
-  panel.innerHTML =
-    '<button type="button" id="newGiftCardFromListButton" style="margin-bottom:18px;">' +
-      "＋ Crear nueva Gift Card" +
-    "</button>" +
+const activeGiftCards = data.filter(gift => Number(gift.balance || 0) > 0);
+const usedGiftCards = data.filter(gift => Number(gift.balance || 0) <= 0);
 
-    data.map(gift => {
+function renderGiftCard(gift) {
 
-      const giftCardLink =
-        window.location.origin +
-        "/gift-card.html?token=" +
-        encodeURIComponent(gift.share_token);
+  const giftCardLink =
+    window.location.origin +
+    "/gift-card.html?token=" +
+    encodeURIComponent(gift.share_token);
 
-      const amount =
-        Number(gift.amount || 0).toFixed(2);
+  const amount =
+    Number(gift.amount || 0).toFixed(2);
 
-      const balance =
-        Number(gift.balance || 0).toFixed(2);
+  const balance =
+    Number(gift.balance || 0).toFixed(2);
 
-      return `
-        <div style="
-          background:#f5eee8;
-          border:1px solid #dfd2c8;
-          border-radius:14px;
-          padding:16px;
-          margin-bottom:12px;
-        ">
+  const isUsed = Number(gift.balance || 0) <= 0;
 
-          <strong style="
-            font-family:Georgia,serif;
-            font-size:18px;
-          ">
-            ${escapeAdminHTML(gift.recipient_name)}
-          </strong>
+  return `
+    <div style="
+      background:#f5eee8;
+      border:1px solid #dfd2c8;
+      border-radius:14px;
+      padding:16px;
+      margin-bottom:12px;
+    ">
+      <strong style="
+        font-family:Georgia,serif;
+        font-size:18px;
+      ">
+        ${escapeAdminHTML(gift.recipient_name)}
+      </strong>
 
-          <div style="
-            margin-top:7px;
-            color:#806e64;
-            font-size:13px;
-            line-height:1.6;
-          ">
-            Código: ${escapeAdminHTML(gift.code)}
-            <br>
-            Monto: $${amount}
-            <br>
-            Saldo: $<span id="giftBalance-${gift.id}">${balance}</span>
-            <br>
-            De: ${escapeAdminHTML(gift.sender_name)}
-          </div>
+      <div style="
+        margin-top:7px;
+        color:#806e64;
+        font-size:13px;
+        line-height:1.6;
+      ">
+        Código: ${escapeAdminHTML(gift.code)}
+        <br>
+        Monto: $${amount}
+        <br>
+        Saldo: $<span id="giftBalance-${gift.id}">${balance}</span>
+        <br>
+        De: ${escapeAdminHTML(gift.sender_name)}
+      </div>
 
-          <div style="
-            display:grid;
-            grid-template-columns:1fr 1fr;
-            gap:8px;
-            margin-top:14px;
-          ">
+      <div style="
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:8px;
+        margin-top:14px;
+      ">
+        <button
+          type="button"
+          onclick="window.open('${giftCardLink}', '_blank')">
+          Ver Gift Card
+        </button>
 
-            <button
-              type="button"
-              onclick="window.open('${giftCardLink}', '_blank')">
-              Ver Gift Card
-            </button>
+        <button
+          type="button"
+          class="secondary"
+          onclick="copyClientLink('${giftCardLink}', this)">
+          Copiar enlace
+        </button>
 
-            <button
-              type="button"
-              class="secondary"
-              onclick="copyClientLink('${giftCardLink}', this)">
-              Copiar enlace
-            </button>
+        ${
+          isUsed
+            ? `
+              <button
+                type="button"
+                class="secondary"
+                style="grid-column:1 / -1;"
+                disabled>
+                Gift Card utilizada
+              </button>
+            `
+            : `
+              <button
+                type="button"
+                class="secondary"
+                style="grid-column:1 / -1;"
+                onclick="registerGiftCardUse('${gift.id}', ${Number(gift.balance || 0)}, this)">
+                Registrar uso
+              </button>
+            `
+        }
+      </div>
+    </div>
+  `;
+}
 
-          ${Number(gift.balance || 0) <= 0 || gift.status === "used" ? `
-  <button
-    type="button"
-    class="secondary"
-    style="grid-column:1 / -1;"
-    disabled>
-    Gift Card utilizada
+panel.innerHTML =
+  `<button type="button" id="newGiftCardFromListButton" style="margin-bottom:18px;">
+    + Crear nueva Gift Card
   </button>
-` : `
-  <button
-    type="button"
-    class="secondary"
-    style="grid-column:1 / -1;"
-    onclick="registerGiftCardUse('${gift.id}', ${Number(gift.balance || 0)}, this)">
-    Registrar uso
-  </button>
-`}
 
-          </div>
+  <details style="margin-bottom:14px;">
+    <summary style="
+      cursor:pointer;
+      padding:16px;
+      background:#e9dfd7;
+      border-radius:14px;
+      font-weight:700;
+      color:#5f4c42;
+      list-style:none;
+    ">
+      Gift Cards activas (${activeGiftCards.length}) ▾
+    </summary>
 
-        </div>
-      `;
-    }).join("");
+    <div style="margin-top:12px;">
+      ${
+        activeGiftCards.length
+          ? activeGiftCards.map(renderGiftCard).join("")
+          : `<div style="padding:14px;color:#806e64;">
+               No tienes Gift Cards activas.
+             </div>`
+      }
+    </div>
+  </details>
+
+  <details>
+    <summary style="
+      cursor:pointer;
+      padding:16px;
+      background:#e9dfd7;
+      border-radius:14px;
+      font-weight:700;
+      color:#5f4c42;
+      list-style:none;
+    ">
+      Gift Cards utilizadas (${usedGiftCards.length}) ▾
+    </summary>
+
+    <div style="margin-top:12px;">
+      ${
+        usedGiftCards.length
+          ? usedGiftCards.map(renderGiftCard).join("")
+          : `<div style="padding:14px;color:#806e64;">
+               Todavía no tienes Gift Cards utilizadas.
+             </div>`
+      }
+    </div>
+  </details>`;
 });
 
     async function registerGiftCardUse(giftId, currentBalance, button) {
