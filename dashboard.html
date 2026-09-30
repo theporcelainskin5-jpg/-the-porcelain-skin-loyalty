@@ -790,10 +790,15 @@ document.addEventListener("click", async (event) => {
         .update(updates)
         .eq("id", giftId);
 
-    if (error) {
-        console.error(error);
-        alert("No se pudo registrar el uso de la Gift Card.");
-        const balanceElement = document.getElementById("giftBalance-" + giftId);
+if (error) {
+    console.error(error);
+    alert("No se pudo registrar el uso de la Gift Card.");
+    button.disabled = false;
+    button.textContent = originalText;
+    return;
+}
+
+const balanceElement = document.getElementById("giftBalance-" + giftId);
 
 if (balanceElement) {
     balanceElement.textContent = newBalance.toFixed(2);
@@ -806,21 +811,6 @@ if (newBalance <= 0) {
     button.disabled = false;
     button.textContent = originalText;
 }
-    }
-
-    if (newBalance <= 0) {
-        alert("Gift Card utilizada completamente. Ahora está marcada como usada.");
-    } else {
-        alert(
-            "Uso registrado correctamente.\nSaldo restante: $" +
-            newBalance.toFixed(2)
-        );
-    }
-
-    button.disabled = false;
-button.textContent = originalText;
-document.getElementById("giftCardsButton").click();
-
 }
     
     document.addEventListener("click", (event) => {
