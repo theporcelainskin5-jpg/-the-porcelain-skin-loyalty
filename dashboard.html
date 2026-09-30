@@ -697,7 +697,7 @@ document.addEventListener("click", async (event) => {
             <br>
             Monto: $${amount}
             <br>
-            Saldo: $${balance}
+            Saldo: $<span id="giftBalance-${gift.id}">${balance}</span>
             <br>
             De: ${escapeAdminHTML(gift.sender_name)}
           </div>
@@ -793,9 +793,19 @@ document.addEventListener("click", async (event) => {
     if (error) {
         console.error(error);
         alert("No se pudo registrar el uso de la Gift Card.");
-        button.disabled = false;
-        button.textContent = originalText;
-        return;
+        const balanceElement = document.getElementById("giftBalance-" + giftId);
+
+if (balanceElement) {
+    balanceElement.textContent = newBalance.toFixed(2);
+}
+
+if (newBalance <= 0) {
+    button.disabled = true;
+    button.textContent = "Gift Card utilizada";
+} else {
+    button.disabled = false;
+    button.textContent = originalText;
+}
     }
 
     if (newBalance <= 0) {
