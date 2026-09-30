@@ -722,12 +722,13 @@ document.addEventListener("click", async (event) => {
               Copiar enlace
             </button>
 
-            <button
+           <button
     type="button"
+    class="secondary"
     style="grid-column:1 / -1;"
-    onclick="markGiftCardAsUsed('${gift.id}', this)">
-    Marcar como usada
-</button>
+    onclick="registerGiftCardUse('${gift.id}', ${Number(gift.balance || 0)}, this)">
+    Registrar uso
+</button> 
 
           </div>
 
@@ -736,34 +737,76 @@ document.addEventListener("click", async (event) => {
     }).join("");
 });
 
-async function markGiftCardAsUsed(giftId, button) {
+    async function registerGiftCardUse(giftId, currentBalance, button) {
+    const input = prompt(
+        "Saldo disponible: $" + Number(currentBalance).toFixed(2) +
+        "\n\n¿Cuánto utilizó el cliente?"
+    );
+
+    if (input === null) return;
+
+    const amountUsed = Number(
+        input.replace("$", "").replace(",", ".").trim()
+    );
+
+    if (!amountUsed || amountUsed <= 0) {
+        alert("Ingresa un monto válido.");
+        return;
+    }
+
+    if (amountUsed > currentBalance) {
+        alert(
+            "El monto utilizado no puede ser mayor al saldo disponible de $" +
+            Number(currentBalance).toFixed(2)
+        );
+        return;
+    }
+
+    const newBalance =
+        Math.round((currentBalance - amountUsed) * 100) / 100;
+
     const confirmed = confirm(
-        "¿Seguro que quieres marcar esta Gift Card como usada?"
+        "Se descontarán $" + amountUsed.toFixed(2) +
+        ".\n\nNuevo saldo: $" + newBalance.toFixed(2) +
+        "\n\n¿Confirmar?"
     );
 
     if (!confirmed) return;
 
     const originalText = button.textContent;
     button.disabled = true;
-    button.textContent = "Marcando...";
+    button.textContent = "Registrando...";
+
+    const updates = {
+        balance: newBalance
+    };
+
+    if (newBalance <= 0) {
+        updates.status = "used";
+    }
 
     const { error } = await supabaseClient
         .from("gift_cards")
-        .update({
-            status: "used",
-            balance: 0
-        })
+        .update(updates)
         .eq("id", giftId);
 
     if (error) {
         console.error(error);
-        alert("No se pudo marcar la Gift Card como usada.");
+        alert("No se pudo registrar el uso de la Gift Card.");
         button.disabled = false;
         button.textContent = originalText;
         return;
     }
 
-    alert("Gift Card marcada como usada.");
+    if (newBalance <= 0) {
+        alert("Gift Card utilizada completamente. Ahora está marcada como usada.");
+    } else {
+        alert(
+            "Uso registrado correctamente.\nSaldo restante: $" +
+            newBalance.toFixed(2)
+        );
+    }
+
     loadGiftCards();
 }
     
