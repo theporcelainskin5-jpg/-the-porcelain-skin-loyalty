@@ -722,13 +722,23 @@ document.addEventListener("click", async (event) => {
               Copiar enlace
             </button>
 
-           <button
+          ${Number(gift.balance || 0) <= 0 || gift.status === "used" ? `
+  <button
+    type="button"
+    class="secondary"
+    style="grid-column:1 / -1;"
+    disabled>
+    Gift Card utilizada
+  </button>
+` : `
+  <button
     type="button"
     class="secondary"
     style="grid-column:1 / -1;"
     onclick="registerGiftCardUse('${gift.id}', ${Number(gift.balance || 0)}, this)">
     Registrar uso
-</button> 
+  </button>
+`}
 
           </div>
 
