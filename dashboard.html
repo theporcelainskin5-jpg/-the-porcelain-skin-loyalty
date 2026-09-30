@@ -807,7 +807,10 @@ document.addEventListener("click", async (event) => {
         );
     }
 
-    loadGiftCards();
+    button.disabled = false;
+button.textContent = originalText;
+document.getElementById("giftCardsButton").click();
+
 }
     
     document.addEventListener("click", (event) => {
