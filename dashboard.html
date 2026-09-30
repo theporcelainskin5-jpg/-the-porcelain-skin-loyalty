@@ -722,6 +722,13 @@ document.addEventListener("click", async (event) => {
               Copiar enlace
             </button>
 
+            <button
+    type="button"
+    style="grid-column:1 / -1;"
+    onclick="markGiftCardAsUsed('${gift.id}', this)">
+    Marcar como usada
+</button>
+
           </div>
 
         </div>
@@ -729,6 +736,37 @@ document.addEventListener("click", async (event) => {
     }).join("");
 });
 
+async function markGiftCardAsUsed(giftId, button) {
+    const confirmed = confirm(
+        "¿Seguro que quieres marcar esta Gift Card como usada?"
+    );
+
+    if (!confirmed) return;
+
+    const originalText = button.textContent;
+    button.disabled = true;
+    button.textContent = "Marcando...";
+
+    const { error } = await supabaseClient
+        .from("gift_cards")
+        .update({
+            status: "used",
+            balance: 0
+        })
+        .eq("id", giftId);
+
+    if (error) {
+        console.error(error);
+        alert("No se pudo marcar la Gift Card como usada.");
+        button.disabled = false;
+        button.textContent = originalText;
+        return;
+    }
+
+    alert("Gift Card marcada como usada.");
+    loadGiftCards();
+}
+    
     document.addEventListener("click", (event) => {
   if (event.target.id !== "newGiftCardFromListButton") return;
 
